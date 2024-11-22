@@ -1,26 +1,40 @@
 from src.fabric_to_espanso.database import initialize_qdrant_database
+from src.fabric_to_espanso.file_change_detector import detect_file_changes
 from src.fabric_to_espanso.logger import setup_logger
 from parameters import QDRANT_DB_LOCATION, MARKDOWN_FOLDER, YAML_OUTPUT_FOLDER, FABRIC_PURPOSES_FILE
-from src.fabric_to_espanso.file_processor import process_markdown_files
+import logging
 
 # Setup logger
 logger = setup_logger()
 
-try:
-    logger.info(f"Attempting to initialize Qdrant database with location: {QDRANT_DB_LOCATION}")
-    # Initialize Qdrant database
-    client = initialize_qdrant_database()
-    logger.info(f"Qdrant database initialized successfully at {QDRANT_DB_LOCATION}")
-    logger.debug(f"Qdrant client object: {client}")
-    logger.info(f"Markdown folder: {MARKDOWN_FOLDER}")
-    logger.info(f"YAML output folder: {YAML_OUTPUT_FOLDER}")
-    logger.info(f"Fabric purposes file: {FABRIC_PURPOSES_FILE}")
-    logger.info("Application started successfully")
-except Exception as e:
-    logger.critical(f"Failed to start the application: {str(e)}", exc_info=True)
+def main():
+    try:
+        logger.info(f"Attempting to initialize Qdrant database with location: {QDRANT_DB_LOCATION}")
+        # Initialize Qdrant database
+        client = initialize_qdrant_database()
+        logger.info(f"Qdrant database initialized successfully at {QDRANT_DB_LOCATION}")
+        logger.debug(f"Qdrant client object: {client}")
+        logger.info(f"Markdown folder: {MARKDOWN_FOLDER}")
+        logger.info(f"YAML output folder: {YAML_OUTPUT_FOLDER}")
+        logger.info(f"Fabric purposes file: {FABRIC_PURPOSES_FILE}")
+        logger.info("Application started successfully")
 
-try:
-    markdown_files = process_markdown_files()
-    logger.info(f"Processed {len(markdown_files)} markdown files")
-except Exception as e:
-    logger.error(f"Error processing markdown files: {str(e)}", exc_info=True)
+        # Detect file changes, passing the client
+        new_files, modified_files, deleted_files = detect_file_changes(client)
+
+        # Log the results
+        logger.info(f"New files: {[file['filename'] for file in new_files]}")
+        logger.info(f"Modified files: {[file['filename'] for file in modified_files]}")
+        logger.info(f"Deleted files: {deleted_files}")
+
+        # Add this log to check if any changes were detected
+        if not new_files and not modified_files and not deleted_files:
+            logger.warning("No changes detected. This might indicate an issue with the database or file processing.")
+
+        # TODO: Handle the detected changes (this will be implemented in the next task)
+
+    except Exception as e:
+        logger.error(f"An error occurred in the main function: {str(e)}", exc_info=True)
+
+if __name__ == "__main__":
+    main()

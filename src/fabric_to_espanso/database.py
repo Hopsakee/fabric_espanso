@@ -52,6 +52,10 @@ def initialize_qdrant_database():
             )
             logger.info("Created payload indexes for 'filename' and 'date'")
 
+        # Add this log to check the number of points in the collection
+        collection_info = client.get_collection(collection_name)
+        logger.debug(f"Number of points in the collection: {collection_info.points_count}")
+
         logger.info(f"Qdrant database initialized successfully at {QDRANT_DB_LOCATION}")
         return client
     except Exception as e:
