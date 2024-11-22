@@ -1,5 +1,6 @@
 from src.fabric_to_espanso.database import initialize_qdrant_database
 from src.fabric_to_espanso.file_change_detector import detect_file_changes
+from src.fabric_to_espanso.database_updater import update_qdrant_database
 from src.fabric_to_espanso.logger import setup_logger
 from parameters import QDRANT_DB_LOCATION, MARKDOWN_FOLDER, YAML_OUTPUT_FOLDER, FABRIC_PURPOSES_FILE
 import logging
@@ -27,14 +28,12 @@ def main():
         logger.info(f"Modified files: {[file['filename'] for file in modified_files]}")
         logger.info(f"Deleted files: {deleted_files}")
 
-        # Add this log to check if any changes were detected
-        if not new_files and not modified_files and not deleted_files:
-            logger.warning("No changes detected. This might indicate an issue with the database or file processing.")
+        # Update Qdrant database
+        update_qdrant_database(client, new_files, modified_files, deleted_files)
 
-        # TODO: Handle the detected changes (this will be implemented in the next task)
-
+        logger.info("Fabric to Espanso conversion process completed successfully")
     except Exception as e:
-        logger.error(f"An error occurred in the main function: {str(e)}", exc_info=True)
+        logger.error(f"An error occurred during the conversion process: {str(e)}", exc_info=True)
 
 if __name__ == "__main__":
     main()

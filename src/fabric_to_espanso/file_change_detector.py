@@ -2,6 +2,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http.models import Filter, FieldCondition, MatchValue
 from .file_processor import process_markdown_files
 from parameters import MARKDOWN_FOLDER
+from datetime import datetime
 import logging
 
 logger = logging.getLogger('fabric_to_espanso')
@@ -24,16 +25,9 @@ def detect_file_changes(client):
         # Query Qdrant for all stored file information
         stored_files = client.scroll(
             collection_name="markdown_files",
-            scroll_filter=Filter(
-                must=[
-                    FieldCondition(
-                        key="filename",
-                        match=MatchValue(value="")
-                    )
-                ]
-            ),
             limit=10000  # Adjust this value based on your expected number of files
         )[0]
+        # TODO: Add handling of cases of multiple entries with the same filename
         logger.debug(f"Stored files in Qdrant: {[file.payload['filename'] for file in stored_files]}")
 
         # Convert stored files to a dictionary for easy comparison
@@ -47,8 +41,11 @@ def detect_file_changes(client):
         for file in current_files:
             if file['filename'] not in stored_files_dict:
                 new_files.append(file)
-            elif file['last_modified'] > stored_files_dict[file['filename']].payload['date']:
-                modified_files.append(file)
+            else:
+                stored_date_time_str = stored_files_dict[file['filename']].payload['date']
+                stored_date_time_obj = datetime.strptime(stored_date_time_str, '%Y-%m-%dT%H:%M:%S.%f')
+                if file['last_modified'] > stored_date_time_obj:
+                    modified_files.append(file)
 
         # Check for deleted files
         current_filenames = set(file['filename'] for file in current_files)
