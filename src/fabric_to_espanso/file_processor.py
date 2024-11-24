@@ -3,6 +3,7 @@ from datetime import datetime
 from parameters import MARKDOWN_FOLDER
 import logging
 from .markdown_parser import parse_markdown_file
+from .yaml_generator import generate_yaml
 
 logger = logging.getLogger('fabric_to_espanso')
 
@@ -28,12 +29,19 @@ def process_markdown_files():
                         content, extracted_sections = parse_markdown_file(file_path)
                         if extracted_sections is not None:
                             last_modified = datetime.fromtimestamp(os.path.getmtime(file_path))
+                            # TODO: maak van trigger een parameter
+                            label = file[:-3]
+                            trigger = "/:"
+                            yaml_content = generate_yaml(content, file, trigger=trigger, label=label)
 
                             markdown_files.append({
                                 'filename': file,
                                 'content': content,
                                 'purpose': extracted_sections,
-                                'last_modified': last_modified
+                                'last_modified': last_modified,
+                                'trigger': trigger,
+                                'label': label,
+                                'espanso_yaml': yaml_content
                             })
 
                             logger.info(f"Processed file: {file}")

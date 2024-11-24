@@ -3,112 +3,79 @@ import logging
 logger = logging.getLogger('fabric_to_espanso')
 
 import re
-import itertools
 
-def generate_heading_combinations(base_words):
+def parse_markdown_file(markdown_file_path, keywords=None):
     """
-    Dynamically generate all possible heading combinations.
-    
-    Args:
-        base_words (list): List of base words to combine
-    
-    Returns:
-        list: All possible heading combinations, case-insensitive
-    """
-    # Generate all possible combination lengths
-    combinations = []
-    for r in range(1, len(base_words) + 1):
-        # Create combinations of r length
-        word_combos = list(itertools.combinations(base_words, r))
-        
-        # Convert combinations to human-readable headings
-        heading_combos = [
-            ' and '.join(combo).lower() 
-            for combo in word_combos
-        ]
-        combinations.extend(heading_combos)
-    
-    return combinations
-    
-def parse_markdown_file(markdown_file_path, base_words=None):
-    """
-    Dynamically extract sections based on flexible heading combinations.
+    Extract sections with specified keywords from markdown file.
     
     Args:
         markdown_file_path (str): Path to the markdown file
-        base_words (list, optional): Words to generate headings from
+        keywords (list, optional): List of keywords to match in headings
     
     Returns:
-        dict: Extracted sections with their contents
+        str: Extracted sections or full file content
     """
+    # Default keywords if not provided
+    if keywords is None:
+        keywords = ['Identity', 'Purpose', 'Goal', 'Goals', 'Task', 'Tasks']
+    
+    # Prepare case-insensitive regex pattern for keywords
+    keyword_pattern = r'|'.join(re.escape(kw) for kw in keywords)
+    
+    # Read file content
     try:
-        # Default base words if not provided
-        if base_words is None:
-            base_words = ['Identity', 'Purpose', 'Task', 'Goal']
-        
-        # Generate all possible heading combinations
-        VALID_HEADINGS = generate_heading_combinations(base_words)
-        
-        # Read file content
         with open(markdown_file_path, 'r', encoding='utf-8') as file:
             content = file.read()
-        
-        extracted_sections = ""
-        
-        for heading in VALID_HEADINGS:
-            # Escape any potential regex special characters in the heading
-            escaped_heading = re.escape(heading)
-            
-            # Flexible regex pattern to match headings
-            pattern = rf'^#+\s*{escaped_heading}\s*$'
-            
-            # Find all matches (allows multiple sections with same heading type)
-            matches = list(re.finditer(pattern, content, re.MULTILINE | re.IGNORECASE))
-            
-            for i, match in enumerate(matches):
-                start_index = match.start()
-                
-                # Find next heading or end of file
-                next_heading_match = re.search(
-                    r'^#+\s*[^\n]+', 
-                    content[start_index+1:], 
-                    re.MULTILINE
-                )
-                
-                if next_heading_match:
-                    # Extract content between current and next heading
-                    end_index = start_index + next_heading_match.start() + 1
-                    section_content = content[start_index:end_index].strip()
-                else:
-                    # If no next heading, take till end of file
-                    section_content = content[start_index:].strip()
-                
-                # Add extracted section to string of already extracted sections.
-                extracted_sections += f"{extracted_sections}\n\n{section_content}\n\n"
-        
-        return content, extracted_sections
+    except FileNotFoundError:
+        print(f"File not found: {markdown_file_path}")
+        return ""
     
-    except Exception as e:
-        logger.error(f"Error parsing markdown file {markdown_file_path}: {str(e)}", exc_info=True)
-        return None
+    # Find all headings in the document
+    heading_matches = list(re.finditer(r'^#+\s*.*$', content, re.MULTILINE))
+    
+    # If no headings or no keyword matches, return full content
+    if not heading_matches or not re.search(keyword_pattern, content, re.IGNORECASE):
+        return content, content
+    
+    # Extract sections
+    extracted_sections = [] # To prevent shuffling of the extracted sections
+    extracted_content = set()  # To prevent duplicate text
+    
+    for i, match in enumerate(heading_matches):
+        # Check if current heading matches keywords
+        if re.search(keyword_pattern, match.group(0), re.IGNORECASE):
+            # Determine the start of this section
+            start = match.start()
+            
+            # Find the start of the next section or end of file
+            if i + 1 < len(heading_matches):
+                end = heading_matches[i+1].start()
+                section = content[start:end].strip()
+            else:
+                # Last section
+                section = content[start:].strip()
+            
+            # Prevent duplicate content
+            if section not in extracted_content:
+                extracted_sections.append(section)
+                extracted_content.add(section)
+    
+    extracted_content_str = '\n\n'.join(extracted_sections)
+    
+    # Join extracted sections
+    return content, extracted_content_str
 
 def main():
-    # Example usage with default base words
+    # Example usage
     try:
-        sections = parse_markdown_file('document.md')
+        # Custom keywords can be passed as second argument
+        result = parse_markdown_file('document.md')
+        # result = extract_sections('document.md', ['Identity', 'Purpose', 'Scope'])
         
-        # Optional: Add custom base words
-        # sections = extract_sections('document.md', ['Identity', 'Purpose', 'Context', 'Goal'])
-        
-        for heading, content in sections.items():
-            print(f"--- {heading.upper()} ---")
-            print(content)
-            print("\n")
+        print(result)
     
-    except FileNotFoundError:
-        print("File not found.")
     except Exception as e:
         print(f"An error occurred: {e}")
 
 if __name__ == '__main__':
-    main()
+    main()    

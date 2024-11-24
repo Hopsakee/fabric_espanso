@@ -25,7 +25,10 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
                     "filename": file['filename'],
                     "content": file['content'],
                     "purpose": file['purpose'],
-                    "date": file['last_modified']
+                    "date": file['last_modified'],
+                    "trigger": file['trigger'],
+                    "label": file['label'],
+                    "espanso_yaml": file['espanso_yaml']
                 }
             )
             client.upsert(collection_name="markdown_files", points=[point])
@@ -52,7 +55,8 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
                         "filename": file['filename'],
                         "content": file['content'],
                         "purpose": file['purpose'],
-                        "date": file['last_modified']
+                        "date": file['last_modified'],
+                        "yaml_content": file['yaml_content']
                     }
                 )
                 client.upsert(collection_name="markdown_files", points=[point])
@@ -61,7 +65,6 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
                 logger.warning(f"File not found in database for update: {file['filename']}")
 
         # Delete removed files
-        # FIXME: search werkt niet, geeft error
         for filename in deleted_files:
             # Query the database to find the point with the matching filename
             scroll_result = client.scroll(
