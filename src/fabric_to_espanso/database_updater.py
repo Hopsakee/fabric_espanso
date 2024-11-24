@@ -24,6 +24,7 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
                 payload={
                     "filename": file['filename'],
                     "content": file['content'],
+                    "purpose": file['purpose'],
                     "date": file['last_modified']
                 }
             )
@@ -50,6 +51,7 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
                     payload={
                         "filename": file['filename'],
                         "content": file['content'],
+                        "purpose": file['purpose'],
                         "date": file['last_modified']
                     }
                 )

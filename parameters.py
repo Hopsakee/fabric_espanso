@@ -9,6 +9,9 @@ QDRANT_DB_LOCATION="/home/jelle/Qdrant_databases/fabric_db"
 YAML_OUTPUT_FOLDER="/mnt/c/Drive/Fabric_yml"
 FABRIC_PURPOSES_FILE="/mnt/c/Drive/Fabric_yml/Fabric_purposes.md"
 
+# Headings to extract from markdown files
+BASE_WORDS = ['Identity', 'Purpose', 'Task', 'Goal']
+
 # Ensure required directories exist
 os.makedirs(MARKDOWN_FOLDER, exist_ok=True)
 os.makedirs(QDRANT_DB_LOCATION, exist_ok=True)
