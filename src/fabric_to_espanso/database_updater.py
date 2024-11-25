@@ -2,6 +2,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http.models import PointStruct, Filter, FieldCondition, MatchValue, PointIdsList
 import logging
 import uuid
+from .yaml_file_generator import generate_yaml_file
 
 logger = logging.getLogger('fabric_to_espanso')
 
@@ -56,7 +57,7 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
                         "content": file['content'],
                         "purpose": file['purpose'],
                         "date": file['last_modified'],
-                        "yaml_content": file['yaml_content']
+                        "espanso_yaml": file['espanso_yaml']
                     }
                 )
                 client.upsert(collection_name="markdown_files", points=[point])
@@ -86,5 +87,9 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
                 logger.warning(f"File not found in database for deletion: {filename}")
 
         logger.info("Database update completed successfully")
+
+        # Generate new YAML file after database update
+        generate_yaml_file(client)
+
     except Exception as e:
         logger.error(f"Error updating Qdrant database: {str(e)}", exc_info=True)

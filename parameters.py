@@ -12,6 +12,9 @@ FABRIC_PURPOSES_FILE="/mnt/c/Drive/Fabric_yml/Fabric_purposes.md"
 # Headings to extract from markdown files
 BASE_WORDS = ['Identity', 'Purpose', 'Task', 'Goal']
 
+# New parameter for YAML output
+YAML_OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "fabric_patterns.yml")
+
 # Ensure required directories exist
 os.makedirs(MARKDOWN_FOLDER, exist_ok=True)
 os.makedirs(QDRANT_DB_LOCATION, exist_ok=True)

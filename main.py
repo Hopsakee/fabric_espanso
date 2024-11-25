@@ -1,12 +1,12 @@
 from src.fabric_to_espanso.database import initialize_qdrant_database
 from src.fabric_to_espanso.file_change_detector import detect_file_changes
 from src.fabric_to_espanso.database_updater import update_qdrant_database
-from src.fabric_to_espanso.logger import setup_logger
+from src.fabric_to_espanso.yaml_file_generator import generate_yaml_file
 from parameters import QDRANT_DB_LOCATION, MARKDOWN_FOLDER, YAML_OUTPUT_FOLDER, FABRIC_PURPOSES_FILE
 import logging
 
 # Setup logger
-logger = setup_logger()
+logger = logging.getLogger('fabric_to_espanso')
 
 def main():
     try:
@@ -30,6 +30,14 @@ def main():
 
         # Update Qdrant database
         update_qdrant_database(client, new_files, modified_files, deleted_files)
+
+        # Generate YAML file from current database state
+        if new_files or modified_files or deleted_files:
+            logger.info("Changes detected. Updating YAML file.")
+            generate_yaml_file(client)
+        else:
+            logger.info("No changes detected. Generating YAML file from current database state.")
+            generate_yaml_file(client)
 
         logger.info("Fabric to Espanso conversion process completed successfully")
     except Exception as e:
