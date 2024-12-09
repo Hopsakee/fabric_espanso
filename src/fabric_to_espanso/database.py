@@ -1,4 +1,3 @@
-from parameters import QDRANT_DB_LOCATION
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from qdrant_client.http.models import Distance, VectorParams
@@ -15,14 +14,14 @@ def initialize_qdrant_database():
         QdrantClient: An instance of the Qdrant client.
     """
     try:
-        logger.info(f"Attempting to initialize Qdrant database at location: {QDRANT_DB_LOCATION}")
+        logger.info(f"Attempting to initialize Qdrant database at location: http://localhost:6333/")
         logger.debug(f"Current working directory: {os.getcwd()}")
 
         # Create a Qdrant client
-        client = QdrantClient(path=QDRANT_DB_LOCATION)
-        logger.info(f"QdrantClient created with path: {QDRANT_DB_LOCATION}")
+        client = QdrantClient(url="http://localhost:6333")
+        logger.info(f"QdrantClient created at location: http://localhost:6333/")
         logger.debug(f"QdrantClient object: {client}")
-        logger.info(f"Connected to Qdrant database at {QDRANT_DB_LOCATION}")
+        logger.info(f"Connected to Qdrant database at http://localhost:6333/")
 
         # Define the collection name
         collection_name = "markdown_files"
@@ -56,7 +55,7 @@ def initialize_qdrant_database():
         collection_info = client.get_collection(collection_name)
         logger.debug(f"Number of points in the collection: {collection_info.points_count}")
 
-        logger.info(f"Qdrant database initialized successfully at {QDRANT_DB_LOCATION}")
+        logger.info(f"Qdrant database initialized successfully at http://localhost:6333/")
         return client
     except Exception as e:
         logger.error(f"Error initializing Qdrant database: {str(e)}", exc_info=True)

@@ -2,18 +2,20 @@ from src.fabric_to_espanso.database import initialize_qdrant_database
 from src.fabric_to_espanso.file_change_detector import detect_file_changes
 from src.fabric_to_espanso.database_updater import update_qdrant_database
 from src.fabric_to_espanso.yaml_file_generator import generate_yaml_file
-from parameters import QDRANT_DB_LOCATION, MARKDOWN_FOLDER, YAML_OUTPUT_FOLDER, FABRIC_PURPOSES_FILE
+from src.fabric_to_espanso.logger import setup_logger
+from parameters import MARKDOWN_FOLDER, YAML_OUTPUT_FOLDER, FABRIC_PURPOSES_FILE
 import logging
 
 # Setup logger
-logger = logging.getLogger('fabric_to_espanso')
+logger = setup_logger()
 
 def main():
     try:
-        logger.info(f"Attempting to initialize Qdrant database with location: {QDRANT_DB_LOCATION}")
+        print("Fabric to Espanso conversion process started")
+        logger.info(f"Attempting to initialize Qdrant database with location: http://localhost:6333/")
         # Initialize Qdrant database
         client = initialize_qdrant_database()
-        logger.info(f"Qdrant database initialized successfully at {QDRANT_DB_LOCATION}")
+        logger.info(f"Qdrant database initialized successfully at http://localhost:6333/")
         logger.debug(f"Qdrant client object: {client}")
         logger.info(f"Markdown folder: {MARKDOWN_FOLDER}")
         logger.info(f"YAML output folder: {YAML_OUTPUT_FOLDER}")

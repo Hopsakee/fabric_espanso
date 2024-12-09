@@ -50,6 +50,9 @@ Fabric_to_espanso consists of several components that work together to process m
 - markdown
 - watchdog
 
+The Qdrant dabase server must be running on localhost:6333.
+The easiest way is using the docker image, see https://qdrant.tech/documentation/quickstart/
+
 ### Quickstart
 
 1. **Clone the repository**:

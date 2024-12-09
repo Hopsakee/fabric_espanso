@@ -12,8 +12,10 @@ def setup_logger(log_file='fabric_to_espanso.log'):
     Returns:
         logging.Logger: Configured logger object.
     """
+    print("Setting up logger")
+    print(os.getcwd())
     logger = logging.getLogger('fabric_to_espanso')
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
 
     # Create logs directory if it doesn't exist
     log_dir = 'logs'
