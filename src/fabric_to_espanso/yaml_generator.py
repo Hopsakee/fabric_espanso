@@ -17,19 +17,14 @@ def generate_yaml(markdown_content, filename, trigger="/:", label=None):
         str: The generated YAML content.
     """
     try:
-        yaml_content = {
-            "trigger": trigger,
-            "replace": f">\n{markdown_content.strip()}\n\n{{{{clipb}}}}",
-            "label": label if label else filename,
-            "vars": [
-                {
-                    "name": "clipb",
-                    "type": "clipboard"
-                }
-            ]
-        }
-
-        return yaml.dump([yaml_content], default_flow_style=False)
+        # Clean and format the markdown content
+        content = markdown_content.strip()
+        # Remove extra newlines and normalize spacing
+        content = '\n'.join(line.strip() for line in content.split('\n') if line.strip())
+        # Add INPUT section at the end
+        content = f"{content}\n\n# INPUT\n{{clipb}}"
+        
+        return content
     except Exception as e:
         logger.error(f"Error generating YAML for {filename}: {str(e)}", exc_info=True)
         return None

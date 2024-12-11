@@ -7,7 +7,7 @@ import logging
 
 logger = logging.getLogger('fabric_to_espanso')
 
-def detect_file_changes(client):
+def detect_file_changes(client, markdown_folder=MARKDOWN_FOLDER):
     """
     Detect changes in markdown files by comparing with the Qdrant database.
 
@@ -19,7 +19,7 @@ def detect_file_changes(client):
     """
     try:
         # Get all markdown files from the specified folder
-        current_files = process_markdown_files()
+        current_files = process_markdown_files(markdown_folder)
         logger.debug(f"Current files: {[file['filename'] for file in current_files]}")
 
         # Query Qdrant for all stored file information

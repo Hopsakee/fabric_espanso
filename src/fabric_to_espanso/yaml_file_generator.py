@@ -5,7 +5,14 @@ from parameters import YAML_OUTPUT_FOLDER
 
 logger = logging.getLogger('fabric_to_espanso')
 
-def generate_yaml_file(client: QdrantClient):
+class BlockString(str): pass
+
+def repr_block_string(dumper, data):
+    return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+
+yaml.add_representer(BlockString, repr_block_string)
+
+def generate_yaml_file(client: QdrantClient, yaml_file_path: str = YAML_OUTPUT_FOLDER):
     """
     Generate a complete YAML file from the Qdrant database.
 
@@ -18,25 +25,24 @@ def generate_yaml_file(client: QdrantClient):
             collection_name="markdown_files",
             limit=10000  # Adjust based on your expected maximum number of files
         )[0]
-
-        yaml_content = "matches:\n"
+        
+        data = {'matches': []}
 
         for result in results:
-            yaml_entry = f"""
-              - trigger: {result.payload['trigger']}
-                replace: >
-                  {result.payload['espanso_yaml']}
-                label: {result.payload['label']}
-                vars:
-                    - name: "clipb"
-                      type: "clipboard"
-            """
-            yaml_content += yaml_entry
+            entry = {
+                'trigger': result.payload['trigger'],
+                'replace': BlockString(result.payload['content'] + '\n{{clipb}}'),
+                'label': result.payload['label'],
+                'vars': [
+                    {'name': 'clipb', 'type': 'clipboard'}
+                ]
+            }
+            data['matches'].append(entry)
 
         # Write the YAML file
-        yaml_output_path = f"{YAML_OUTPUT_FOLDER}/fabric_patterns.yml"  
+        yaml_output_path = f"{yaml_file_path}/fabric_patterns.yml"  
         with open(yaml_output_path, 'w') as yaml_file:
-            yaml_file.write(yaml_content)
+            yaml.dump(data, yaml_file, sort_keys=False, default_flow_style=False)
 
         logger.info(f"YAML file generated successfully at {yaml_output_path}")
     except Exception as e:

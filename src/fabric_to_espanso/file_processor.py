@@ -7,7 +7,7 @@ from .yaml_generator import generate_yaml
 
 logger = logging.getLogger('fabric_to_espanso')
 
-def process_markdown_files():
+def process_markdown_files(markdown_folder=MARKDOWN_FOLDER):
     """
     Process all markdown files in the specified folder and its first-level subfolders.
 
@@ -17,9 +17,9 @@ def process_markdown_files():
     markdown_files = []
 
     try:
-        for root, dirs, files in os.walk(MARKDOWN_FOLDER):
+        for root, dirs, files in os.walk(markdown_folder):
             # Limit to first-level subfolders
-            if root != MARKDOWN_FOLDER and os.path.dirname(root) != MARKDOWN_FOLDER:
+            if root != markdown_folder and os.path.dirname(root) != markdown_folder:
                 continue
 
             for file in files:
@@ -32,7 +32,6 @@ def process_markdown_files():
                             # TODO: maak van trigger een parameter
                             label = file[:-3]
                             trigger = "/:"
-                            yaml_content = generate_yaml(content, file, trigger=trigger, label=label)
 
                             markdown_files.append({
                                 'filename': file,
@@ -40,8 +39,7 @@ def process_markdown_files():
                                 'purpose': extracted_sections,
                                 'last_modified': last_modified,
                                 'trigger': trigger,
-                                'label': label,
-                                'espanso_yaml': yaml_content
+                                'label': label
                             })
 
                             logger.info(f"Processed file: {file}")

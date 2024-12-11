@@ -28,8 +28,7 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
                     "purpose": file['purpose'],
                     "date": file['last_modified'],
                     "trigger": file['trigger'],
-                    "label": file['label'],
-                    "espanso_yaml": file['espanso_yaml']
+                    "label": file['label']
                 }
             )
             client.upsert(collection_name="markdown_files", points=[point])
@@ -56,8 +55,7 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
                         "filename": file['filename'],
                         "content": file['content'],
                         "purpose": file['purpose'],
-                        "date": file['last_modified'],
-                        "espanso_yaml": file['espanso_yaml']
+                        "date": file['last_modified']
                     }
                 )
                 client.upsert(collection_name="markdown_files", points=[point])
