@@ -1,10 +1,27 @@
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import PointStruct, Filter, FieldCondition, MatchValue, PointIdsList
+from fastembed import TextEmbedding
 import logging
 import uuid
 from .yaml_file_generator import generate_yaml_file
 
 logger = logging.getLogger('fabric_to_espanso')
+
+# Initialize the FastEmbed model (done once)
+embedding_model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
+
+def get_embedding(text: str) -> list:
+    """
+    Generate embedding vector for the given text using FastEmbed.
+    
+    Args:
+        text (str): Text to generate embedding for
+        
+    Returns:
+        list: Embedding vector
+    """
+    embeddings = list(embedding_model.embed([text]))
+    return embeddings[0].tolist()
 
 def update_qdrant_database(client: QdrantClient, new_files: list, modified_files: list, deleted_files: list):
     """
@@ -21,7 +38,7 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
         for file in new_files:
             point = PointStruct(
                 id=str(uuid.uuid4()),  # Generate a new UUID for each point
-                vector=[0.0] * 384,  # Placeholder vector, replace with actual embedding
+                vector=get_embedding(file['purpose']),  # Generate vector from purpose field
                 payload={
                     "filename": file['filename'],
                     "content": file['content'],
@@ -50,7 +67,7 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
                 # Update the existing point with the new file data
                 point = PointStruct(
                     id=point_id,
-                    vector=[0.0] * 384,  # Placeholder vector, replace with actual embedding
+                    vector=get_embedding(file['purpose']),  # Generate vector from purpose field
                     payload={
                         "filename": file['filename'],
                         "content": file['content'],

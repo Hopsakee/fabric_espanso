@@ -3,10 +3,13 @@ import os
 # Project root directory
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-MARKDOWN_FOLDER="/mnt/c/_Tools/FabricConvertData"
-# MARKDOWN_FOLDER="/mnt/c/Obsidian/BrainCave/Extra/FabricPatterns"
-YAML_OUTPUT_FOLDER="/mnt/c/Drive/Fabric_yml"
-FABRIC_PURPOSES_FILE="/mnt/c/Drive/Fabric_yml/Fabric_purposes.md"
+# Get Windows user profile path
+import subprocess
+windows_user = subprocess.check_output(['cmd.exe', '/c', 'echo %USERNAME%'], text=True).strip()
+
+
+MARKDOWN_FOLDER="/mnt/c/Obsidian/BrainCave/Extra/FabricPatterns"
+YAML_OUTPUT_FOLDER=f"/mnt/c/Users/{windows_user}/AppData/Roaming/espanso/match"
 
 # Headings to extract from markdown files
 BASE_WORDS = ['Identity', 'Purpose', 'Task', 'Goal']

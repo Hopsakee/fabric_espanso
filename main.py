@@ -3,7 +3,7 @@ from src.fabric_to_espanso.file_change_detector import detect_file_changes
 from src.fabric_to_espanso.database_updater import update_qdrant_database
 from src.fabric_to_espanso.yaml_file_generator import generate_yaml_file
 from src.fabric_to_espanso.logger import setup_logger
-from parameters import MARKDOWN_FOLDER, YAML_OUTPUT_FOLDER, FABRIC_PURPOSES_FILE
+from parameters import MARKDOWN_FOLDER, YAML_OUTPUT_FOLDER
 import logging
 
 # Setup logger
@@ -19,7 +19,6 @@ def main():
         logger.debug(f"Qdrant client object: {client}")
         logger.info(f"Markdown folder: {MARKDOWN_FOLDER}")
         logger.info(f"YAML output folder: {YAML_OUTPUT_FOLDER}")
-        logger.info(f"Fabric purposes file: {FABRIC_PURPOSES_FILE}")
         logger.info("Application started successfully")
 
         # Detect file changes, passing the client
