@@ -10,11 +10,11 @@ Fabric_to_espanso consists of several components that work together to process m
 
 - **Python**: Main programming language.
 - **Qdrant**: Vector similarity search engine for maintaining a database.
+- **Fastembed**: To create the vectors fastembed is used.
 - **pandas**: Data manipulation and analysis.
 - **pyyaml**: Parsing and producing YAML.
 - **qdrant-client**: Python client for Qdrant.
 - **markdown**: Parsing Markdown files.
-- **watchdog**: Monitoring file system events.
 
 ### Project Structure
 
