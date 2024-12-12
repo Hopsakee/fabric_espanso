@@ -6,6 +6,12 @@ from src.fabric_to_espanso.logger import setup_logger
 from parameters import MARKDOWN_FOLDER, YAML_OUTPUT_FOLDER
 import logging
 
+# Reload the imports if necessary
+# import importlib
+# importlib.reload(parameters)
+# MARKkDOWN_FOLDER = parameters.MARKDOWN_FOLDER
+# YAML_OUTPUT_FOLDER = parameters.YAML_OUTPUT_FOLDER
+
 # Setup logger
 logger = setup_logger()
 
@@ -15,7 +21,6 @@ def main():
         logger.info(f"Attempting to initialize Qdrant database with location: http://localhost:6333/")
         # Initialize Qdrant database
         client = initialize_qdrant_database()
-        logger.info(f"Qdrant database initialized successfully at http://localhost:6333/")
         logger.debug(f"Qdrant client object: {client}")
         logger.info(f"Markdown folder: {MARKDOWN_FOLDER}")
         logger.info(f"YAML output folder: {YAML_OUTPUT_FOLDER}")

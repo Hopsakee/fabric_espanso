@@ -4,9 +4,13 @@ from qdrant_client.http.models import Distance, VectorParams
 import logging
 import os
 
+from parameters import USE_FASTEMBED, EMBED_MODEL, COLLECTION_NAME
+
 logger = logging.getLogger('fabric_to_espanso')
 
-def initialize_qdrant_database():
+def initialize_qdrant_database(collection_name: str = COLLECTION_NAME,
+                               use_fastembed: bool = USE_FASTEMBED,
+                               embed_model: str = EMBED_MODEL):
     """
     Initialize the Qdrant database with the required schema for storing markdown file information.
 
@@ -23,19 +27,26 @@ def initialize_qdrant_database():
         logger.debug(f"QdrantClient object: {client}")
         logger.info(f"Connected to Qdrant database at http://localhost:6333/")
 
-        # Define the collection name
-        collection_name = "markdown_files"
-
         # Check if the collection already exists
         collections = client.get_collections()
         logger.debug(f"Existing collections: {[c.name for c in collections.collections]}")
         if collection_name not in [c.name for c in collections.collections]:
             # Create the collection with the required schema
-            client.create_collection(
-                collection_name=collection_name,
-                vectors_config=VectorParams(size=384, distance=Distance.COSINE),
-                on_disk_payload=True
-            )
+            if use_fastembed:
+                logger.info(f"Creating new collection: {collection_name}. Using FastEmbed model with default embedding model.")
+                client.create_collection(
+                    collection_name=collection_name,
+                    vectors_config=client.get_fastembed_vector_params(),
+                    on_disk_payload=True
+                )
+            else:
+                logger.info(f"Creating new collection: {collection_name}. Using the {embed_model} embedding model.")
+                client.create_collection(
+                    collection_name=collection_name,
+                    vectors_config={
+                        embed_model: VectorParams(size=384, distance=Distance.COSINE)},
+                    on_disk_payload=True
+                )
             logger.info(f"Created new collection: {collection_name}")
 
             # Create payload indexes for efficient searching

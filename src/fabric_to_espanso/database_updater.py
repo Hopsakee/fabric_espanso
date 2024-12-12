@@ -5,12 +5,12 @@ import logging
 import uuid
 from .yaml_file_generator import generate_yaml_file
 
+from parameters import USE_FASTEMBED, EMBED_MODEL
+
 logger = logging.getLogger('fabric_to_espanso')
 
-# Initialize the FastEmbed model (done once)
-embedding_model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
 
-def get_embedding(text: str) -> list:
+def get_embedding(text: str, embedding_model: TextEmbedding) -> list:
     """
     Generate embedding vector for the given text using FastEmbed.
     
@@ -33,12 +33,22 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
         modified_files (list): List of modified files to be updated in the database.
         deleted_files (list): List of deleted files to be removed from the database.
     """
+    # Initialize the FastEmbed model (done once)
+    if USE_FASTEMBED:
+        logger.info(f"Initializing FastEmbed model.")
+        embedding_model = TextEmbedding()
+    else:
+        logger.info(f"Initializing embbeding model: {EMBED_MODEL}")
+        # TODO: testen. Weet niet of dit werkt.
+        embedding_model = TextEmbedding(model_name=EMBED_MODEL)
+
     try:
         # Add new files
         for file in new_files:
             point = PointStruct(
                 id=str(uuid.uuid4()),  # Generate a new UUID for each point
-                vector=get_embedding(file['purpose']),  # Generate vector from purpose field
+                vector={'fast-bge-small-en':
+                        get_embedding(file['purpose'], embedding_model)},  # Generate vector from purpose field
                 payload={
                     "filename": file['filename'],
                     "content": file['content'],
@@ -67,7 +77,15 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
                 # Update the existing point with the new file data
                 point = PointStruct(
                     id=point_id,
-                    vector=get_embedding(file['purpose']),  # Generate vector from purpose field
+                    # LET OP: als je 'fastembed' gebruikt, moet je de naam van de vector gebruiken.
+                    # In dit geval is de naam 'fast-bge-small-en'.
+                    # Gebruik je fastembed niet, maar rechtstreeks de QDRANT api, dan kun je ook gebruik maken
+                    # van unnamed vectors en kun je dus schrrijven vector = get_embedding(file['purpose'], embedding_model)
+                    # Zie https://github.com/qdrant/qdrant-client/discussions/598
+                    # De naam die fastembed gebruikt is afhankelijk van het model dat je gebruikt.
+                    # Je kunt de naam vinden door: client.get_vector_field_name()
+                    vector={'fast-bge-small-en': 
+                            get_embedding(file['purpose'], embedding_model)},  # Generate vector from purpose field
                     payload={
                         "filename": file['filename'],
                         "content": file['content'],
