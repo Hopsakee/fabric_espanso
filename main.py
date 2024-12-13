@@ -1,3 +1,4 @@
+from pickle import MARK
 from src.fabric_to_espanso.database import initialize_qdrant_database
 from src.fabric_to_espanso.file_change_detector import detect_file_changes
 from src.fabric_to_espanso.database_updater import update_qdrant_database
@@ -7,10 +8,9 @@ from parameters import MARKDOWN_FOLDER, YAML_OUTPUT_FOLDER
 import logging
 
 # Reload the imports if necessary
-# import importlib
-# importlib.reload(parameters)
-# MARKkDOWN_FOLDER = parameters.MARKDOWN_FOLDER
-# YAML_OUTPUT_FOLDER = parameters.YAML_OUTPUT_FOLDER
+import importlib
+MARKDOWN_FOLDER = importlib.import_module('parameters').MARKDOWN_FOLDER
+YAML_OUTPUT_FOLDER = importlib.import_module('parameters').YAML_OUTPUT_FOLDER
 
 # Setup logger
 logger = setup_logger()

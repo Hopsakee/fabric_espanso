@@ -29,5 +29,9 @@ COLLECTION_NAME = "markdown_files"
 # Checks
 #
 # Ensure required directories exist
-os.makedirs(MARKDOWN_FOLDER, exist_ok=True)
-os.makedirs(YAML_OUTPUT_FOLDER, exist_ok=True)
+def check_path(path):
+    if not os.path.exists(path):
+        raise Exception(f"Path {path} does not exist")
+
+for path in [MARKDOWN_FOLDER, YAML_OUTPUT_FOLDER]:
+    check_path(path)        
