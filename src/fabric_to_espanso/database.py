@@ -1,73 +1,136 @@
-from qdrant_client import QdrantClient
-from qdrant_client.http import models
-from qdrant_client.http.models import Distance, VectorParams
+"""Database management for fabric-to-espanso."""
+from ast import Not
+from typing import Optional, List
 import logging
-import os
+import time
+from contextlib import contextmanager
 
-from parameters import USE_FASTEMBED, EMBED_MODEL, COLLECTION_NAME
+from qdrant_client import QdrantClient
+from qdrant_client.http import models, exceptions
+from qdrant_client.http.models import Distance, VectorParams
+
+from config import config
+from parameters import COLLECTION_NAME
+from exceptions import DatabaseConnectionError, CollectionError, DatabaseInitializationError
 
 logger = logging.getLogger('fabric_to_espanso')
 
-def initialize_qdrant_database(collection_name: str = COLLECTION_NAME,
-                               use_fastembed: bool = USE_FASTEMBED,
-                               embed_model: str = EMBED_MODEL):
+@contextmanager
+def database_connection(url: Optional[str] = None) -> QdrantClient:
+    """Create a database connection with automatic cleanup.
+    
+    Args:
+        url: Optional database URL. If not provided, uses configuration.
+        
+    Yields:
+        QdrantClient: Connected database client
+        
+    Raises:
+        DatabaseConnectionError: If connection fails after retries
     """
-    Initialize the Qdrant database with the required schema for storing markdown file information.
+    client = None
+    try:
+        url = url or config.database.url
+        for attempt in range(config.database.max_retries + 1):
+            try:
+                client = QdrantClient(
+                    url=url,
+                    timeout=config.database.timeout
+                )
+                # Test connection
+                client.get_collections()
+                break
+            except Exception as e:
+                if attempt == config.database.max_retries:
+                    raise DatabaseConnectionError(
+                        f"Failed to connect to database at {url} after "
+                        f"{config.database.max_retries} attempts: {str(e)}"
+                    ) from e
+                logger.warning(
+                    f"Connection attempt {attempt + 1} failed, retrying in "
+                    f"{config.database.retry_delay} seconds..."
+                )
+                time.sleep(config.database.retry_delay)
+        
+        yield client
+    finally:
+        if client:
+            client.close()
 
+def initialize_qdrant_database(
+    collection_name: str = COLLECTION_NAME,
+    use_fastembed: bool = config.embedding.use_fastembed,
+    embed_model: str = config.embedding.model_name
+) -> QdrantClient:
+    """Initialize the Qdrant database for storing markdown file information.
+    
+    Args:
+        collection_name: Name of the collection to initialize
+        use_fastembed: Whether to use FastEmbed for embeddings
+        embed_model: Name of the embedding model to use
+        
     Returns:
-        QdrantClient: An instance of the Qdrant client.
+        QdrantClient: Initialized database client
+        
+    Raises:
+        DatabaseInitializationError: If initialization fails
+        CollectionError: If collection creation fails
+        ConfigurationError: If configuration is invalid
     """
     try:
-        logger.info(f"Attempting to initialize Qdrant database at location: http://localhost:6333/")
-        logger.debug(f"Current working directory: {os.getcwd()}")
-
-        # Create a Qdrant client
-        client = QdrantClient(url="http://localhost:6333")
-        logger.info(f"QdrantClient created at location: http://localhost:6333/")
-        logger.debug(f"QdrantClient object: {client}")
-        logger.info(f"Connected to Qdrant database at http://localhost:6333/")
-
-        # Check if the collection already exists
-        collections = client.get_collections()
-        logger.debug(f"Existing collections: {[c.name for c in collections.collections]}")
-        if collection_name not in [c.name for c in collections.collections]:
-            # Create the collection with the required schema
-            if use_fastembed:
-                logger.info(f"Creating new collection: {collection_name}. Using FastEmbed model with default embedding model.")
-                client.create_collection(
-                    collection_name=collection_name,
-                    vectors_config=client.get_fastembed_vector_params(),
-                    on_disk_payload=True
-                )
-            else:
-                logger.info(f"Creating new collection: {collection_name}. Using the {embed_model} embedding model.")
-                client.create_collection(
-                    collection_name=collection_name,
-                    vectors_config={
-                        embed_model: VectorParams(size=384, distance=Distance.COSINE)},
-                    on_disk_payload=True
-                )
-            logger.info(f"Created new collection: {collection_name}")
-
-            # Create payload indexes for efficient searching
-            client.create_payload_index(
-                collection_name=collection_name,
-                field_name="filename",
-                field_schema=models.PayloadSchemaType.KEYWORD
+        # Validate configuration
+        config.validate()
+        
+        with database_connection() as client:
+            # Check if collection exists
+            collections = client.get_collections()
+            collection_names = [c.name for c in collections.collections]
+            
+            if collection_name not in collection_names:
+                logger.info(f"Creating new collection: {collection_name}")
+                
+                # Create collection with appropriate vector configuration
+                if use_fastembed:
+                    logger.info(f"Creating new collection: {collection_name}. Using FastEmbed model with default embedding model.")
+                    vectors_config=client.get_fastembed_vector_params()
+                else:
+                    logger.info(f"Trying to initialize without using FastEmbed. This is not implemented yet.")
+                    raise NotImplementedError(f"Initializing embbeding model without FastEmbed. This is not implemented yet.")
+                
+                try:
+                    client.create_collection(
+                        collection_name=collection_name,
+                        vectors_config=vectors_config,
+                        on_disk_payload=True
+                    )
+                except exceptions.UnexpectedResponse as e:
+                    raise CollectionError(
+                        f"Failed to create collection {collection_name}: {str(e)}"
+                    ) from e
+                
+                # Create indexes for efficient searching
+                for field_name, field_type in [
+                    ("filename", models.PayloadSchemaType.KEYWORD),
+                    ("date", models.PayloadSchemaType.DATETIME)
+                ]:
+                    client.create_payload_index(
+                        collection_name=collection_name,
+                        field_name=field_name,
+                        field_schema=field_type
+                    )
+                logger.info(f"Created indexes for collection {collection_name}")
+            
+            # Log collection status
+            collection_info = client.get_collection(collection_name)
+            logger.info(
+                f"Collection {collection_name} ready with "
+                f"{collection_info.points_count} points"
             )
-            client.create_payload_index(
-                collection_name=collection_name,
-                field_name="date",
-                field_schema=models.PayloadSchemaType.DATETIME
-            )
-            logger.info("Created payload indexes for 'filename' and 'date'")
-
-        # Add this log to check the number of points in the collection
-        collection_info = client.get_collection(collection_name)
-        logger.debug(f"Number of points in the collection: {collection_info.points_count}")
-
-        logger.info(f"Qdrant database initialized successfully at http://localhost:6333/")
-        return client
+            
+            return client
+            
     except Exception as e:
-        logger.error(f"Error initializing Qdrant database: {str(e)}", exc_info=True)
-        raise
+        logger.error(f"Database initialization failed: {str(e)}", exc_info=True)
+        if isinstance(e, (DatabaseConnectionError, CollectionError)):
+            raise
+        raise DatabaseInitializationError(str(e)) from e
