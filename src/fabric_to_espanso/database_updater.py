@@ -122,7 +122,7 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
         logger.info("Database update completed successfully")
 
         # Generate new YAML file after database update
-        generate_yaml_file(client)
+        generate_yaml_file(client, config.yaml_output_folder)
 
     except Exception as e:
         logger.error(f"Error updating Qdrant database: {str(e)}", exc_info=True)

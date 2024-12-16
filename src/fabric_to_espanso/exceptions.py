@@ -27,3 +27,11 @@ class ConfigurationError(FabricToEspansoError):
 class NotImplementedError(FabricToEspansoError):
     """Raised when a feature is not implemented."""
     pass
+
+class ParsingError(FabricToEspansoError):
+    """Raised when there's an error parsing markdown files."""
+    pass
+
+class ProcessingError(FabricToEspansoError):
+    """Raised when there's an error processing the input files."""
+    pass

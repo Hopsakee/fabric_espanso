@@ -1,53 +1,117 @@
-from pickle import MARK
+"""Main entry point for the Fabric to Espanso conversion process."""
+from typing import Optional
+import sys
+import signal
+import logging
+from contextlib import contextmanager
+
 from src.fabric_to_espanso.database import initialize_qdrant_database
 from src.fabric_to_espanso.file_change_detector import detect_file_changes
 from src.fabric_to_espanso.database_updater import update_qdrant_database
 from src.fabric_to_espanso.yaml_file_generator import generate_yaml_file
 from src.fabric_to_espanso.logger import setup_logger
-from parameters import MARKDOWN_FOLDER, YAML_OUTPUT_FOLDER
-import logging
-
-# Reload the imports if necessary
-import importlib
-MARKDOWN_FOLDER = importlib.import_module('parameters').MARKDOWN_FOLDER
-YAML_OUTPUT_FOLDER = importlib.import_module('parameters').YAML_OUTPUT_FOLDER
+from src.fabric_to_espanso.config import config
+from src.fabric_to_espanso.exceptions import (
+    DatabaseConnectionError,
+    DatabaseInitializationError
+)
 
 # Setup logger
 logger = setup_logger()
 
-def main():
+class GracefulExit(SystemExit):
+    """Custom exception for graceful shutdown."""
+    pass
+
+def signal_handler(signum, frame):
+    """Handle shutdown signals gracefully."""
+    logger.info(f"Received signal {signum}. Initiating graceful shutdown...")
+    raise GracefulExit()
+
+@contextmanager
+def managed_qdrant_client():
+    """Context manager for handling Qdrant client lifecycle."""
+    client = None
     try:
-        print("Fabric to Espanso conversion process started")
-        logger.info(f"Attempting to initialize Qdrant database with location: http://localhost:6333/")
-        # Initialize Qdrant database
         client = initialize_qdrant_database()
-        logger.debug(f"Qdrant client object: {client}")
-        logger.info(f"Markdown folder: {MARKDOWN_FOLDER}")
-        logger.info(f"YAML output folder: {YAML_OUTPUT_FOLDER}")
-        logger.info("Application started successfully")
+        yield client
+    finally:
+        if client:
+            logger.info("Closing Qdrant client connection...")
+            client.close()
+            logger.info("Qdrant client connection closed")
 
-        # Detect file changes, passing the client
-        new_files, modified_files, deleted_files = detect_file_changes(client)
-
+def process_changes(client) -> bool:
+    """Process file changes and update database and YAML files.
+    
+    Args:
+        client: Initialized Qdrant client
+        
+    Returns:
+        bool: True if processing was successful, False otherwise
+    """
+    try:
+        # Detect file changes
+        new_files, modified_files, deleted_files = detect_file_changes(client, config.markdown_folder)
+        
         # Log the results
-        logger.info(f"New files: {[file['filename'] for file in new_files]}")
-        logger.info(f"Modified files: {[file['filename'] for file in modified_files]}")
-        logger.info(f"Deleted files: {deleted_files}")
-
-        # Update Qdrant database
-        update_qdrant_database(client, new_files, modified_files, deleted_files)
-
-        # Generate YAML file from current database state
-        if new_files or modified_files or deleted_files:
-            logger.info("Changes detected. Updating YAML file.")
-            generate_yaml_file(client)
-        else:
-            logger.info("No changes detected. Generating YAML file from current database state.")
-            generate_yaml_file(client)
-
-        logger.info("Fabric to Espanso conversion process completed successfully")
+        if new_files:
+            logger.info(f"New files: {[file['filename'] for file in new_files]}")
+        if modified_files:
+            logger.info(f"Modified files: {[file['filename'] for file in modified_files]}")
+        if deleted_files:
+            logger.info(f"Deleted files: {deleted_files}")
+            
+        # Update database if there are changes
+        if any([new_files, modified_files, deleted_files]):
+            logger.info("Changes detected. Updating database...")
+            update_qdrant_database(client, new_files, modified_files, deleted_files)
+            
+        # Always generate YAML file to ensure consistency
+        generate_yaml_file(client, config.yaml_output_folder)
+        return True
+        
     except Exception as e:
-        logger.error(f"An error occurred during the conversion process: {str(e)}", exc_info=True)
+        logger.error(f"Error processing changes: {str(e)}", exc_info=True)
+        return False
+
+def main() -> Optional[int]:
+    """Main application entry point.
+    
+    Returns:
+        Optional[int]: Exit code, None if successful, 1 if error
+    """
+    # Setup signal handlers
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    
+    try:
+        logger.info("Fabric to Espanso conversion process started")
+        
+        # Log configuration
+        logger.info(f"Using configuration:")
+        logger.info(f"  Database URL: {config.database.url}")
+        logger.info(f"  Markdown folder: {config.markdown_folder}")
+        logger.info(f"  YAML output folder: {config.yaml_output_folder}")
+        
+        # Process changes with managed client
+        with managed_qdrant_client() as client:
+            if process_changes(client):
+                logger.info("Fabric to Espanso conversion completed successfully")
+                return None
+            else:
+                logger.error("Fabric to Espanso conversion completed with errors")
+                return 1
+                
+    except GracefulExit:
+        logger.info("Gracefully shutting down...")
+        return None
+    except (DatabaseConnectionError, DatabaseInitializationError) as e:
+        logger.error(f"Database error: {str(e)}")
+        return 1
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}", exc_info=True)
+        return 1
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main() or 0)

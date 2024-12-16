@@ -1,16 +1,24 @@
 """Configuration management for fabric-to-espanso."""
 from typing import Dict, Any, Optional
-import os
 from dataclasses import dataclass
 from urllib.parse import urlparse
+
+from parameters import (
+    MARKDOWN_FOLDER,
+    YAML_OUTPUT_FOLDER,
+    USE_FASTEMBED,
+    EMBED_MODEL,
+    COLLECTION_NAME,
+    BASE_WORDS
+)
 
 @dataclass
 class DatabaseConfig:
     """Database configuration settings."""
-    url: str = os.getenv('QDRANT_URL', 'http://localhost:6333')
-    max_retries: int = int(os.getenv('QDRANT_MAX_RETRIES', '3'))
-    retry_delay: float = float(os.getenv('QDRANT_RETRY_DELAY', '1.0'))
-    timeout: float = float(os.getenv('QDRANT_TIMEOUT', '10.0'))
+    url: str = "http://localhost:6333"
+    max_retries: int = 3
+    retry_delay: float = 1.0
+    timeout: float = 10.0
 
     def validate(self) -> None:
         """Validate the database configuration.
@@ -39,9 +47,10 @@ class DatabaseConfig:
 @dataclass
 class EmbeddingConfig:
     """Embedding model configuration."""
-    use_fastembed: bool = os.getenv('USE_FASTEMBED', 'true').lower() == 'true'
-    model_name: str = os.getenv('EMBED_MODEL', 'fast-bge-small-en')
-    vector_size: int = int(os.getenv('VECTOR_SIZE', '384'))
+    use_fastembed: bool = USE_FASTEMBED
+    model_name: str = EMBED_MODEL
+    collection_name: str = COLLECTION_NAME
+    vector_size: int = 384
     
     def validate(self) -> None:
         """Validate the embedding configuration."""
@@ -55,19 +64,31 @@ class EmbeddingConfig:
 
 class Config:
     """Global configuration singleton."""
-    _instance = None
+    _instance: Optional['Config'] = None
     
-    def __new__(cls):
+    def __new__(cls) -> 'Config':
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance.database = DatabaseConfig()
             cls._instance.embedding = EmbeddingConfig()
+            cls._instance.markdown_folder = MARKDOWN_FOLDER
+            cls._instance.yaml_output_folder = YAML_OUTPUT_FOLDER
+            cls._instance.base_words = BASE_WORDS
         return cls._instance
-        
-    def validate(self):
+    
+    def validate(self) -> None:
         """Validate all configuration settings."""
         self.database.validate()
         self.embedding.validate()
+        
+        # Validate paths
+        if not self.markdown_folder:
+            from .exceptions import ConfigurationError
+            raise ConfigurationError("Markdown folder path cannot be empty")
+            
+        if not self.yaml_output_folder:
+            from .exceptions import ConfigurationError
+            raise ConfigurationError("YAML output folder path cannot be empty")
 
 # Global configuration instance
 config = Config()
