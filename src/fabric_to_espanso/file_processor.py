@@ -11,7 +11,7 @@ logger = logging.getLogger('fabric_to_espanso')
 
 def find_markdown_files(
     root_dir: Path,
-    max_depth: int = 1,
+    max_depth: int = 2,
     pattern: str = "*.md"
 ) -> List[Path]:
     """Find markdown files in directory up to specified depth.
@@ -73,7 +73,7 @@ def process_markdown_file(
         content, extracted_sections = parse_markdown_file(str(file_path))
         if extracted_sections is None:
             logger.warning(f"No sections extracted from {file_path}")
-            return None
+            extracted_sections = content
             
         return {
             'filename': file_path.name,
@@ -90,7 +90,8 @@ def process_markdown_file(
 
 def process_markdown_files(
     markdown_folder: Path | str,
-    max_depth: int = 1,
+    # TODO: make 'max_depth' a parameter
+    max_depth: int = 2,
     trigger_prefix: str = "/:"
 ) -> List[Dict[str, Any]]:
     """Process all markdown files in directory.

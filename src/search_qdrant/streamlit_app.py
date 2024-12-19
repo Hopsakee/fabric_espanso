@@ -2,10 +2,12 @@ import streamlit as st
 import pyperclip
 from src.fabric_to_espanso.database import initialize_qdrant_database
 from src.fabric_to_espanso.database_updater import update_qdrant_database
+from src.fabric_to_espanso.file_change_detector import detect_file_changes
 from src.fabric_to_espanso.yaml_file_generator import generate_yaml_file
 from src.search_qdrant.database_query import query_qdrant_database
 import logging
 import atexit
+from src.fabric_to_espanso.config import config
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -113,18 +115,46 @@ def update_database():
             collection_info = st.session_state.client.get_collection("markdown_files")
             initial_points = collection_info.points_count
             
-            # TODO: You'll need to implement the logic to get new_files, modified_files, and deleted_files
-            # For now, we'll just show a message
-            st.info("Database update functionality is not yet implemented in the GUI.")
-            st.info("Please run the update script directly for now.")
+            # Detect file changes
+            new_files, modified_files, deleted_files = detect_file_changes(
+                client=st.session_state.client,
+                markdown_folder=config.markdown_folder
+            )
             
-            # For demonstration, showing the current number of entries
+            # Update the database
+            update_qdrant_database(
+                client=st.session_state.client,
+                new_files=new_files,
+                modified_files=modified_files,
+                deleted_files=deleted_files
+            )
+            
+            # Generate YAML file
+            generate_yaml_file(
+                client=st.session_state.client,
+                yaml_output_folder=config.yaml_output_folder
+            )
+            
+            # Get updated collection info
+            collection_info = st.session_state.client.get_collection("markdown_files")
+            final_points = collection_info.points_count
+            
+            # Show summary
             st.success(f"""
-            Current database status:
-            - Total entries: {initial_points}
+            Database update completed successfully!
+            
+            Changes detected:
+            - {len(new_files)} new files
+            - {len(modified_files)} modified files
+            - {len(deleted_files)} deleted files
+            
+            Database entries:
+            - Initial: {initial_points}
+            - Final: {final_points}
             """)
             
     except Exception as e:
+        logger.error(f"Error updating database: {e}", exc_info=True)
         st.error(f"Error updating database: {e}")
 
 def main():
