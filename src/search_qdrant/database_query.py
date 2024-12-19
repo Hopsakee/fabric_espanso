@@ -41,15 +41,17 @@ def main():
 
       args = parser.parse_args()
 
-      results = query_qdrant_database(query=args.query,
-                                      client=client,
-                                      num_results=args.num_results,
-                                      collection_name=args.collection_name
-      )
+      try:
+          results = query_qdrant_database(query=args.query,
+                                        client=client,
+                                        num_results=args.num_results,
+                                        collection_name=args.collection_name
+          )
 
-      filenames = [r.metadata['filename'] for r in results]
-
-      print(filenames)
+          filenames = [r.metadata['filename'] for r in results]
+          print(filenames)
+      finally:
+          client.close()
 
 if __name__ == "__main__":
       main()

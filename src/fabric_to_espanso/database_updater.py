@@ -6,6 +6,7 @@ import uuid
 from .yaml_file_generator import generate_yaml_file
 
 from parameters import USE_FASTEMBED, EMBED_MODEL
+from src.fabric_to_espanso.config import config
 
 logger = logging.getLogger('fabric_to_espanso')
 
@@ -34,19 +35,21 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
         deleted_files (list): List of deleted files to be removed from the database.
     """
     # Initialize the FastEmbed model (done once)
-    if USE_FASTEMBED:
+    if config.embedding.use_fastembed:
+        # TODO: I think it is possible to choose another model here. Make that an option
         logger.info(f"Initializing FastEmbed model.")
         embedding_model = TextEmbedding()
     else:
-        logger.info(f"Initializing embbeding model: {EMBED_MODEL}")
+        logger.info(f"Initializing embbeding model: {config.model_name}")
         # TODO: testen. Weet niet of dit werkt.
-        embedding_model = TextEmbedding(model_name=EMBED_MODEL)
+        embedding_model = TextEmbedding(model_name=config.model_name)
 
     try:
         # Add new files
         for file in new_files:
             point = PointStruct(
                 id=str(uuid.uuid4()),  # Generate a new UUID for each point
+                # TODO: 'fast-bge-small-en' is de naam van de vector. Je kunt de naam vinden door: client.get_vector_field_name()
                 vector={'fast-bge-small-en':
                         get_embedding(file['purpose'], embedding_model)},  # Generate vector from purpose field
                 payload={

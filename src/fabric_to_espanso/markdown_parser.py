@@ -2,6 +2,7 @@
 from typing import Tuple, List, Optional, Set
 from pathlib import Path
 import re
+import regex
 import logging
 
 from .exceptions import ParsingError
@@ -9,46 +10,12 @@ from .config import config
 
 logger = logging.getLogger('fabric_to_espanso')
 
-def create_heading_pattern(keywords: Set[str]) -> re.Pattern:
-    """Create regex pattern for matching markdown headings with keywords.
-    
-    Args:
-        keywords: Set of keywords to match in headings
-        
-    Returns:
-        Compiled regex pattern
-    """
-    # Escape special characters and join with OR
-    keyword_pattern = '|'.join(re.escape(kw) for kw in keywords)
-    # Match any level heading with our keywords
-    return re.compile(
-        rf'^(#+)\s*(?:{keyword_pattern}).*$',
-        re.MULTILINE | re.IGNORECASE
+def create_section_pattern(keywords: Set[str]) -> regex.Pattern:
+    keyword_pattern = '|'.join(regex.escape(kw) for kw in keywords)
+    return regex.compile(
+        rf'^#\s+.*(?:{keyword_pattern}).*$\n?(?:(?!^#).*\n?)*',
+        regex.MULTILINE | regex.IGNORECASE
     )
-
-def find_section_boundaries(
-    content: str,
-    heading_matches: List[re.Match]
-) -> List[Tuple[int, int]]:
-    """Find start and end positions of markdown sections.
-    
-    Args:
-        content: Full markdown content
-        heading_matches: List of regex matches for headings
-        
-    Returns:
-        List of (start, end) positions for each section
-    """
-    boundaries = []
-    for i, match in enumerate(heading_matches):
-        start = match.start()
-        # If this is the last heading, section ends at EOF
-        if i + 1 < len(heading_matches):
-            end = heading_matches[i + 1].start()
-        else:
-            end = len(content)
-        boundaries.append((start, end))
-    return boundaries
 
 def parse_markdown_file(
     file_path: str | Path,
@@ -71,8 +38,8 @@ def parse_markdown_file(
         # Use provided keywords or defaults from config
         keywords = keywords or set(config.base_words)
         
-        # Create regex pattern for headings
-        heading_pattern = create_heading_pattern(keywords)
+        # Create regex pattern for keywords in headings and text
+        section_pattern = create_section_pattern(keywords)
         
         # Read file content
         path = Path(file_path)
@@ -82,30 +49,16 @@ def parse_markdown_file(
             raise ParsingError(f"Failed to read {path}: {str(e)}") from e
             
         # Find all matching headings
-        heading_matches = list(heading_pattern.finditer(content))
+        section_matches = list(section_pattern.findall(content))
         
         # If no matches found, return full content
-        if not heading_matches:
+        if not section_matches:
             logger.debug(f"No matching sections found in {path.name}")
             return content, None
             
-        # Get section boundaries
-        boundaries = find_section_boundaries(content, heading_matches)
-        
-        # Extract unique sections
-        sections: Set[str] = set()
-        for start, end in boundaries:
-            section = content[start:end].strip()
-            if section:  # Skip empty sections
-                sections.add(section)
-                
-        if not sections:
-            logger.debug(f"No non-empty sections found in {path.name}")
-            return content, None
-            
         # Join sections with double newline
-        extracted = '\n\n'.join(sorted(sections))
-        logger.debug(f"Extracted {len(sections)} sections from {path.name}")
+        extracted = '\n\n'.join(section_matches)
+        logger.debug(f"Extracted {len(section_matches)} sections from {path.name}")
         
         return content, extracted
         
