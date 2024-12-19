@@ -31,6 +31,11 @@ def show_comparison_view(prompts):
     """Show a full-width comparison view of the selected prompts."""
     st.write("## Compare Selected Prompts")
     
+    # Add the back button at the top
+    if st.button("Back to search"):
+        st.session_state.comparing = False
+        st.rerun()
+    
     # Create columns for each prompt
     cols = st.columns(len(prompts))
     
@@ -40,23 +45,44 @@ def show_comparison_view(prompts):
     for idx, (col, prompt) in enumerate(zip(cols, prompts)):
         with col:
             st.markdown(f"### {prompt.metadata['filename']}")
-            st.text_area("Content", 
-                        prompt.metadata['content'], 
-                        height=500,
-                        key=f"compare_content_{idx}")
-            if st.button(f"Use this prompt", key=f"compare_use_{idx}"):
-                selected_idx = idx
+            
+            # Create two columns for trigger and button
+            trigger_col, button_col = st.columns([0.7, 0.3])
+            
+            with trigger_col:
+                # Add trigger field
+                current_trigger = prompt.metadata.get('trigger', '')
+                new_trigger = st.text_input("Trigger", 
+                                          value=current_trigger,
+                                          key=f"trigger_{idx}")
+                
+                # Update trigger if changed
+                if new_trigger != current_trigger:
+                    try:
+                        st.session_state.client.set_payload(
+                            collection_name="markdown_files",
+                            payload={"trigger": new_trigger},
+                            points=[prompt.id]
+                        )
+                        st.success(f"Updated trigger to: {new_trigger}")
+                    except Exception as e:
+                        st.error(f"Failed to update trigger: {str(e)}")
+            
+            with button_col:
+                # Align button with text input using empty space
+                st.write("")  # This creates some vertical space
+                if st.button(f"Use this prompt", key=f"compare_use_{idx}"):
+                    selected_idx = idx
+            
+            # Display content as markdown
+            st.markdown("### Content")
+            st.markdown(prompt.metadata["content"])
     
     # Handle selection
     if selected_idx is not None:
         pyperclip.copy(prompts[selected_idx].metadata['content'])
         st.success(f"Copied {prompts[selected_idx].metadata['filename']} to clipboard!")
         # Clear comparison view
-        st.session_state.comparing = False
-        st.rerun()
-    
-    # Add a button to go back
-    if st.button("Back to search"):
         st.session_state.comparing = False
         st.rerun()
 
@@ -157,6 +183,21 @@ def update_database():
         logger.error(f"Error updating database: {e}", exc_info=True)
         st.error(f"Error updating database: {e}")
 
+def display_trigger_table():
+    """Display the trigger table in the sidebar."""
+    with st.sidebar:
+        # Add some space to push the table to the bottom
+        st.markdown("<br>" * 10, unsafe_allow_html=True)
+        
+        # Create the table
+        st.markdown("""
+        | trigger | description |
+        |---------|-------------|
+        | /; | code |
+        | /: | summarize and extract |
+        | /. | think |
+        """)
+
 def main():
     st.set_page_config(layout="wide")
     init_session_state()
@@ -179,6 +220,9 @@ def main():
         st.subheader("Update Database")
         if st.button("Start Update"):
             update_database()
+    
+    # Add the trigger table at the end
+    display_trigger_table()
 
 if __name__ == "__main__":
     main()
