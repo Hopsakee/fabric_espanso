@@ -4,4 +4,4 @@
 export PYTHONPATH="/home/jelle/Tools/pythagora-core/workspace/fabric-to-espanso:$PYTHONPATH"
 
 # Run the streamlit app
-streamlit run src/search_qdrant/streamlit_app.py
+nohup /home/jelle/Tools/pythagora-core/workspace/fabric-to-espanso/.venv/bin/streamlit run ~/Tools/pythagora-core/workspace/fabric-to-espanso/src/search_qdrant/streamlit_app.py & exit
