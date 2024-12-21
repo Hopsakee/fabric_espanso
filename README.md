@@ -1,90 +1,102 @@
-# Fabric_to_espanso
+# Fabric to Espanso Converter
 
-Fabric_to_espanso is a Python project designed to automate the conversion of markdown files to a specific YAML format. It also tracks changes in the markdown files and maintains a database using Qdrant. The project extracts specific content from the markdown files and ensures data consistency and reliability.
-
-## Overview
-
-Fabric_to_espanso consists of several components that work together to process markdown files, convert them to YAML, and store metadata in a Qdrant database. The architecture follows the C4 model with clearly defined contexts, containers, and deployment scenarios.
-
-### Technologies Used
-
-- **Python**: Main programming language.
-- **Qdrant**: Vector similarity search engine for maintaining a database.
-- **Fastembed**: To create the vectors fastembed is used.
-- **pandas**: Data manipulation and analysis.
-- **pyyaml**: Parsing and producing YAML.
-- **qdrant-client**: Python client for Qdrant.
-- **markdown**: Parsing Markdown files.
-
-### Project Structure
-
-- **main.py**: Entry point for initializing the Qdrant database connection.
-- **parameters.py**: Contains configuration parameters such as the location of the markdown files and the Qdrant database.
-- **src/fabric_to_espanso/**: Contains core functionality including database initialization, file processing, and YAML generation.
-  - **database.py**: Functions for initializing and managing the Qdrant database.
-  - **database_updater.py**: Functions for updating the Qdrant database based on file changes.
-  - **file_processor.py**: Functions for processing markdown files.
-  - **file_change_detector.py**: Functions for detecting changes in markdown files.
-  - **logger.py**: Logger configuration.
-  - **markdown_parser.py**: Functions for parsing markdown files.
-  - **yaml_generator.py**: Functions for generating YAML content from markdown files.
-- **tests/**: Contains test files for the project.
+A Python application that bridges Fabric prompts with Espanso by managing and converting prompts through a vector database.
 
 ## Features
 
-- **Markdown to YAML Conversion**: Converts markdown files to a specific YAML format.
-- **Change Tracking**: Monitors updates, deletions, and additions in markdown files.
-- **Content Extraction**: Extracts specific sections from markdown files.
-- **Database Management**: Uses Qdrant to store and manage file metadata and content.
-- **Error Handling**: Provides robust error handling and logging.
+- Store and manage Fabric prompts in a Qdrant vector database
+- Convert stored prompts into Espanso YAML format for system-wide usage
+- Semantic search functionality to find relevant prompts based on their meaning
+- Web interface for easy interaction with the prompt database
 
-## Getting Started
-
-### Requirements
+## Prerequisites
 
 - Python 3.11
-- Qdrant
-- pandas
-- pyyaml
-- qdrant-client
-- markdown
-- watchdog
+- Qdrant vector database server (local or cloud)
+- Obsidian with MeshAI plugin installed
+- Windows (for PowerShell script) or Linux/WSL for direct execution
 
-The Qdrant dabase server must be running on localhost:6333.
-The easiest way is using the docker image, see https://qdrant.tech/documentation/quickstart/
+## Installation
 
-### Quickstart
-
-1. **Clone the repository**:
-   ```sh
-   git clone <repository_url>
-   cd fabric-to-espanso
+1. Install Obsidian and the MeshAI plugin
+2. In Obsidian, create the following folder structure:
    ```
-
-2. **Set up a virtual environment**:
-   ```sh
-   python -m venv .venv
-   source .venv/bin/activate
+   Extra/
+   └── FabricPatterns/
+       ├── Official/  # For downloaded Fabric patterns
+       └── Own/       # For your custom additions
    ```
-
-3. **Install dependencies**:
-   ```sh
-   pip install -r requirements.txt
+3. Clone this repository
+4. Install dependencies using PDM:
+   ```bash
+   pdm install
    ```
+5. Configure your Qdrant server connection in the application settings
 
-4. **Configure parameters**:
-   Edit the `parameters.py` file to set the location of the markdown files and the Qdrant database.
+## Usage
 
-5. **Initialize the Qdrant database**:
-   ```sh
-   python main.py
-   ```
+### Linux/WSL
 
-6. **Run the file processor**:
-   ```sh
-   python -m src.fabric_to_espanso.file_processor
-   ```
+Run the Streamlit application directly:
+```bash
+./src/search_qdrant/run_streamlit.sh
+```
 
-### License
+### Windows
 
-The project is proprietary (not open source). Copyright (c) 2024.
+Create a PowerShell script with the following content to start the application:
+
+```powershell
+# Start streamlit process and capture output
+$streamlitPath = "~/Tools/pythagora-core/workspace/fabric-to-espanso/src/search_qdrant/run_streamlit.sh"
+$output = wsl bash $streamlitPath
+
+$url = "http://localhost:8501" # Default value
+
+$pattern = "https?:\/\/localhost:[0-9]+"
+if ($output -match $pattern) {
+    $urls = $output | Select-String -Pattern $pattern -AllMatches
+    Write-Host "Found URL in output: $($urls.Matches.Value)"
+    $url = $urls.Matches.Value[0]
+} else {
+    Write-Host "No URL found in output. Probably because Streamlit app is already running."
+}
+
+# Wait and check for server
+$attempts = 0
+while ($attempts -lt 5) {
+    try {
+        $response = Invoke-WebRequest -Uri $url -UseBasicParsing -ErrorAction Stop
+        Write-Host "$url"
+        Start-Process "msedge.exe" "--app=$url" -WindowStyle Normal
+        break
+    }
+    catch {
+        Start-Sleep -Seconds 1
+        $attempts++
+        if ($attempts -eq 5) {
+            Write-Warning "Failed to start Streamlit server after 5 attempts."
+        }
+    }
+}
+```
+
+This script will:
+1. Start the Streamlit server if it's not already running
+2. Open the application in Microsoft Edge in app mode
+3. Automatically handle server startup and connection
+
+## Dependencies
+
+- ipykernel >= 6.29.5
+- markdown >= 3.7
+- pyyaml >= 6.0.2
+- qdrant-client >= 1.12.1
+- fastembed >= 0.4.2
+- streamlit >= 1.41.1
+- pyperclip >= 1.9.0
+- regex >= 2024.11.6
+
+## License
+
+This project is licensed under the MIT License.
