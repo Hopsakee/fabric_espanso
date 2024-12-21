@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Add the project root to PYTHONPATH
+export PYTHONPATH="/home/jelle/Tools/pythagora-core/workspace/fabric-to-espanso:$PYTHONPATH"
+
+# Run the streamlit app
+/home/jelle/Tools/pythagora-core/workspace/fabric-to-espanso/.venv/bin/streamlit run ~/Tools/pythagora-core/workspace/fabric-to-espanso/src/search_qdrant/streamlit_app.py > nohup.out 2>&1 &
+PID=$!
+
+until grep -q "You can now view your Streamlit app" nohup.out
+do
+	if ! kill -0 $PID 2>/dev/null; then
+		echo "Streamlit failed to start"
+		exit 1
+	fi
+	sleep 1
+done
+
+cat nohup.out | grep -A 3 "You can now view your Streamlit app"
+
+sleep 3
+
+exit

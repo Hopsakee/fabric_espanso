@@ -1,0 +1,17 @@
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8501
+  Network URL: http://172.18.189.135:8501
+
+'\\wsl.localhost\Ubuntu\home\jelle\Tools\pythagora-core\workspace\fabric-to-espanso\src\search_qdrant'
+CMD.EXE was started with the above path as the current directory.
+UNC paths are not supported.  Defaulting to Windows directory.
+INFO:httpx:HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET http://localhost:6333/collections/markdown_files "HTTP/1.1 200 OK"
+INFO:fabric_to_espanso:Collection markdown_files ready with 189 points
+INFO:httpx:HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET http://localhost:6333/collections/markdown_files "HTTP/1.1 200 OK"
+INFO:fabric_to_espanso:Collection markdown_files ready with 189 points

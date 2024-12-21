@@ -193,9 +193,9 @@ def display_trigger_table():
         st.markdown("""
         | trigger | description |
         |---------|-------------|
-        | /; | code |
-        | /: | summarize and extract |
-        | /. | think |
+        | ;;c | code |
+        | ;;s | summarize and extract |
+        | ;;t | think |
         """)
 
 def main():
