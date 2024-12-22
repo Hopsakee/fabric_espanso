@@ -199,7 +199,9 @@ def display_trigger_table():
         """)
 
 def main():
-    st.set_page_config(layout="wide")
+    st.set_page_config(
+        page_title="Fabric to Espanso Prompt Manager", 
+        layout="wide")
     init_session_state()
     
     # Sidebar
