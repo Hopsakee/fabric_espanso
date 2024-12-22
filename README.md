@@ -48,8 +48,9 @@ Create a PowerShell script with the following content to start the application:
 
 ```powershell
 # Start streamlit process and capture output
-$streamlitPath = "~/Tools/pythagora-core/workspace/fabric-to-espanso/src/search_qdrant/run_streamlit.sh"
-$output = wsl bash $streamlitPath
+$streamlitPath = "~/Tools/pythagora-core/workspace/fabric-to-espanso/src/search_qdrant"
+# First 'cd' into the path, otherwise the nohup.out file won't be found or created in correct location
+$output = wsl bash -c "cd $streamlitPath && /run_streamlit.sh"
 
 $url = "http://localhost:8501" # Default value
 
