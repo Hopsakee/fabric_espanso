@@ -1,5 +1,6 @@
 import streamlit as st
 import pyperclip
+from pathlib import Path
 from src.fabric_to_espanso.database import initialize_qdrant_database
 from src.fabric_to_espanso.database_updater import update_qdrant_database
 from src.fabric_to_espanso.file_change_detector import detect_file_changes
@@ -206,6 +207,10 @@ def main():
     
     # Sidebar
     with st.sidebar:
+        # Add logo to sidebar
+        image_path = Path(__file__).parent.parent.parent / "data" / "Fab2Esp_transparent.png"
+        st.image(str(image_path), width=200, use_container_width=False)
+        
         st.title("Prompt Manager")
         page = st.radio("Select Option:", ["Search for prompts", "Update database and YAML files"])
         
