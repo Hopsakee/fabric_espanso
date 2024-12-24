@@ -47,38 +47,32 @@ Run the Streamlit application directly:
 Create a PowerShell script with the following content to start the application:
 
 ```powershell
-# Start streamlit process and capture output
-$streamlitPath = "~/Tools/pythagora-core/workspace/fabric-to-espanso/src/search_qdrant"
-# First 'cd' into the path, otherwise the nohup.out file won't be found or created in correct location
-$output = wsl bash -c "cd $streamlitPath && /run_streamlit.sh"
+# Start WSL process without showing window
+$startInfo = New-Object System.Diagnostics.ProcessStartInfo
+$startInfo.Filename = "wsl.exe"
+# Use -c flag to let the command use the WSL2 Ubuntu folder system and not the Windows
+$startInfo.Arguments = "bash -c ~/Tools/pythagora-core/workspace/fabric_to_espanso/src/search_qdrant/run_streamlit.sh"
+$startInfo.UseShellExecute = $false
+$startInfo.RedirectStandardOutput = $true
+$startInfo.RedirectStandardError = $true
+$startInfo.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
+$startInfo.CreateNoWindow = $true
 
-$url = "http://localhost:8501" # Default value
-
-$pattern = "https?:\/\/localhost:[0-9]+"
-if ($output -match $pattern) {
-    $urls = $output | Select-String -Pattern $pattern -AllMatches
-    Write-Host "Found URL in output: $($urls.Matches.Value)"
-    $url = $urls.Matches.Value[0]
-} else {
-    Write-Host "No URL found in output. Probably because Streamlit app is already running."
-}
-
-# Wait and check for server
-$attempts = 0
-while ($attempts -lt 5) {
-    try {
-        $response = Invoke-WebRequest -Uri $url -UseBasicParsing -ErrorAction Stop
-        Write-Host "$url"
-        Start-Process "msedge.exe" "--app=$url" -WindowStyle Normal
-        break
+# Start the process
+try {
+    $process = [System.Diagnostics.Process]::Start($startInfo)
+    Start-Sleep -Seconds 5
+    
+    # Check if Streamlit is actually running
+    $streamlitRunning = Test-NetConnection -ComputerName localhost -Port 8501 -WarningAction SilentlyContinue
+    
+    if ($streamlitRunning.TcpTestSucceeded) {
+        Start-Process "msedge.exe" "--app=http://localhost:8501"
+    } else {
+        Write-Error "Failed to start Streamlit application"
     }
-    catch {
-        Start-Sleep -Seconds 1
-        $attempts++
-        if ($attempts -eq 5) {
-            Write-Warning "Failed to start Streamlit server after 5 attempts."
-        }
-    }
+} catch {
+    Write-Error "Error starting Streamlit: $_"
 }
 ```
 
