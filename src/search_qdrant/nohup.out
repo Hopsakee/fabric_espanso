@@ -1,246 +1,0 @@
-
-  You can now view your Streamlit app in your browser.
-
-  Local URL: http://localhost:8501
-  Network URL: http://172.18.189.135:8501
-
-'\\wsl.localhost\Ubuntu\home\jelle\Tools\pythagora-core\workspace\fabric-to-espanso\src\search_qdrant'
-CMD.EXE was started with the above path as the current directory.
-UNC paths are not supported.  Defaulting to Windows directory.
-INFO:httpx:HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: GET http://localhost:6333/collections/markdown_files "HTTP/1.1 200 OK"
-INFO:fabric_to_espanso:Collection markdown_files ready with 189 points
-  0%|          | 0.00/77.7M [00:00<?, ?iB/s]  0%|          | 48.1k/77.7M [00:00<04:12, 307kiB/s]  0%|          | 97.3k/77.7M [00:00<03:22, 383kiB/s]  0%|          | 212k/77.7M [00:00<01:55, 673kiB/s]   1%|          | 458k/77.7M [00:00<00:59, 1.30MiB/s]  1%|▏         | 1.06M/77.7M [00:00<00:26, 2.90MiB/s]  2%|▏         | 1.82M/77.7M [00:00<00:17, 4.37MiB/s]  4%|▍         | 3.44M/77.7M [00:00<00:09, 8.11MiB/s]  6%|▌         | 4.72M/77.7M [00:00<00:07, 9.55MiB/s]  8%|▊         | 5.99M/77.7M [00:00<00:06, 10.5MiB/s]  9%|▉         | 7.27M/77.7M [00:01<00:06, 11.2MiB/s] 11%|█         | 8.56M/77.7M [00:01<00:05, 11.7MiB/s] 13%|█▎        | 9.84M/77.7M [00:01<00:05, 12.0MiB/s] 14%|█▍        | 11.1M/77.7M [00:01<00:05, 12.2MiB/s] 16%|█▌        | 12.4M/77.7M [00:01<00:05, 12.4MiB/s] 18%|█▊        | 13.7M/77.7M [00:01<00:05, 12.5MiB/s] 19%|█▉        | 14.9M/77.7M [00:01<00:04, 12.6MiB/s] 21%|██        | 16.2M/77.7M [00:01<00:04, 12.6MiB/s] 23%|██▎       | 17.5M/77.7M [00:01<00:04, 12.7MiB/s] 24%|██▍       | 18.8M/77.7M [00:01<00:04, 12.7MiB/s] 26%|██▌       | 20.1M/77.7M [00:02<00:04, 12.7MiB/s] 27%|██▋       | 21.3M/77.7M [00:02<00:04, 12.8MiB/s] 29%|██▉       | 22.6M/77.7M [00:02<00:04, 12.8MiB/s] 31%|███       | 23.9M/77.7M [00:02<00:04, 12.7MiB/s] 32%|███▏      | 25.2M/77.7M [00:02<00:04, 12.7MiB/s] 34%|███▍      | 26.5M/77.7M [00:02<00:04, 12.7MiB/s] 36%|███▌      | 27.7M/77.7M [00:02<00:03, 12.7MiB/s] 37%|███▋      | 29.0M/77.7M [00:02<00:03, 12.7MiB/s] 39%|███▉      | 30.3M/77.7M [00:02<00:03, 12.7MiB/s] 41%|████      | 31.6M/77.7M [00:02<00:03, 12.7MiB/s] 42%|████▏     | 32.8M/77.7M [00:03<00:03, 12.7MiB/s] 44%|████▍     | 34.1M/77.7M [00:03<00:03, 12.8MiB/s] 46%|████▌     | 35.4M/77.7M [00:03<00:03, 12.7MiB/s] 47%|████▋     | 36.7M/77.7M [00:03<00:03, 12.7MiB/s] 49%|████▉     | 38.0M/77.7M [00:03<00:03, 12.7MiB/s] 51%|█████     | 39.3M/77.7M [00:03<00:03, 12.7MiB/s] 52%|█████▏    | 40.5M/77.7M [00:03<00:02, 12.7MiB/s] 54%|█████▍    | 41.8M/77.7M [00:03<00:02, 12.8MiB/s] 56%|█████▌    | 43.1M/77.7M [00:03<00:02, 12.8MiB/s] 57%|█████▋    | 44.4M/77.7M [00:03<00:02, 12.8MiB/s] 59%|█████▉    | 45.7M/77.7M [00:04<00:02, 12.8MiB/s] 60%|██████    | 46.9M/77.7M [00:04<00:02, 12.7MiB/s] 62%|██████▏   | 48.2M/77.7M [00:04<00:02, 12.7MiB/s] 64%|██████▎   | 49.5M/77.7M [00:04<00:02, 12.7MiB/s] 65%|██████▌   | 50.8M/77.7M [00:04<00:02, 12.7MiB/s] 67%|██████▋   | 52.0M/77.7M [00:04<00:02, 12.7MiB/s] 69%|██████▊   | 53.3M/77.7M [00:04<00:01, 12.7MiB/s] 70%|███████   | 54.6M/77.7M [00:04<00:01, 12.8MiB/s] 72%|███████▏  | 55.9M/77.7M [00:04<00:01, 12.8MiB/s] 74%|███████▎  | 57.2M/77.7M [00:05<00:01, 11.9MiB/s] 75%|███████▌  | 58.4M/77.7M [00:05<00:01, 9.75MiB/s] 77%|███████▋  | 59.6M/77.7M [00:05<00:01, 10.5MiB/s] 78%|███████▊  | 60.9M/77.7M [00:05<00:01, 11.1MiB/s] 80%|████████  | 62.2M/77.7M [00:05<00:01, 11.6MiB/s] 82%|████████▏ | 63.5M/77.7M [00:05<00:01, 11.9MiB/s] 83%|████████▎ | 64.7M/77.7M [00:05<00:01, 12.1MiB/s] 85%|████████▌ | 66.0M/77.7M [00:05<00:00, 12.3MiB/s] 87%|████████▋ | 67.3M/77.7M [00:05<00:00, 12.2MiB/s] 88%|████████▊ | 68.5M/77.7M [00:05<00:00, 12.4MiB/s] 90%|████████▉ | 69.8M/77.7M [00:06<00:00, 12.5MiB/s] 92%|█████████▏| 71.1M/77.7M [00:06<00:00, 12.6MiB/s] 93%|█████████▎| 72.4M/77.7M [00:06<00:00, 12.7MiB/s] 95%|█████████▍| 73.7M/77.7M [00:06<00:00, 12.6MiB/s] 97%|█████████▋| 75.0M/77.7M [00:06<00:00, 12.7MiB/s] 98%|█████████▊| 76.2M/77.7M [00:06<00:00, 7.21MiB/s] 99%|█████████▉| 77.2M/77.7M [00:09<00:00, 1.40MiB/s]100%|██████████| 77.7M/77.7M [00:09<00:00, 8.34MiB/s]
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/search "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/search "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/search "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/search "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/search "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/payload?wait=true "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/payload?wait=true "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/payload?wait=true "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/payload?wait=true "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/payload?wait=true "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/payload?wait=true "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/payload?wait=true "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/payload?wait=true "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: GET http://localhost:6333/collections/markdown_files "HTTP/1.1 200 OK"
-INFO:fabric_to_espanso:Processed: agility_story.md
-INFO:fabric_to_espanso:Processed: ai.md
-INFO:fabric_to_espanso:Processed: analyze_answers.md
-INFO:fabric_to_espanso:Processed: analyze_candidates.md
-INFO:fabric_to_espanso:Processed: analyze_cfp_submission.md
-INFO:fabric_to_espanso:Processed: analyze_claims.md
-INFO:fabric_to_espanso:Processed: analyze_comments.md
-INFO:fabric_to_espanso:Processed: analyze_debate.md
-INFO:fabric_to_espanso:Processed: analyze_email_headers.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Official/analyze_incident.md
-INFO:fabric_to_espanso:Processed: analyze_incident.md
-INFO:fabric_to_espanso:Processed: analyze_interviewer_techniques.md
-INFO:fabric_to_espanso:Processed: analyze_logs.md
-INFO:fabric_to_espanso:Processed: analyze_malware.md
-INFO:fabric_to_espanso:Processed: analyze_military_strategy.md
-INFO:fabric_to_espanso:Processed: analyze_mistakes.md
-INFO:fabric_to_espanso:Processed: analyze_paper.md
-INFO:fabric_to_espanso:Processed: analyze_patent.md
-INFO:fabric_to_espanso:Processed: analyze_personality.md
-INFO:fabric_to_espanso:Processed: analyze_presentation.md
-INFO:fabric_to_espanso:Processed: analyze_product_feedback.md
-INFO:fabric_to_espanso:Processed: analyze_proposition.md
-INFO:fabric_to_espanso:Processed: analyze_prose.md
-INFO:fabric_to_espanso:Processed: analyze_prose_json.md
-INFO:fabric_to_espanso:Processed: analyze_prose_pinker.md
-INFO:fabric_to_espanso:Processed: analyze_risk.md
-INFO:fabric_to_espanso:Processed: analyze_sales_call.md
-INFO:fabric_to_espanso:Processed: analyze_spiritual_text.md
-INFO:fabric_to_espanso:Processed: analyze_tech_impact.md
-INFO:fabric_to_espanso:Processed: analyze_threat_report.md
-INFO:fabric_to_espanso:Processed: analyze_threat_report_trends.md
-INFO:fabric_to_espanso:Processed: answer_interview_question.md
-INFO:fabric_to_espanso:Processed: ask_secure_by_design_questions.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Official/ask_uncle_duke.md
-INFO:fabric_to_espanso:Processed: ask_uncle_duke.md
-INFO:fabric_to_espanso:Processed: capture_thinkers_work.md
-INFO:fabric_to_espanso:Processed: check_agreement.md
-INFO:fabric_to_espanso:Processed: clean_text.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Official/coding_master.md
-INFO:fabric_to_espanso:Processed: coding_master.md
-INFO:fabric_to_espanso:Processed: compare_and_contrast.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Official/convert_to_markdown.md
-INFO:fabric_to_espanso:Processed: convert_to_markdown.md
-INFO:fabric_to_espanso:Processed: create_5_sentence_summary.md
-INFO:fabric_to_espanso:Processed: create_academic_paper.md
-INFO:fabric_to_espanso:Processed: create_ai_jobs_analysis.md
-INFO:fabric_to_espanso:Processed: create_aphorisms.md
-INFO:fabric_to_espanso:Processed: create_art_prompt.md
-INFO:fabric_to_espanso:Processed: create_better_frame.md
-INFO:fabric_to_espanso:Processed: create_coding_project.md
-INFO:fabric_to_espanso:Processed: create_command.md
-INFO:fabric_to_espanso:Processed: create_cyber_summary.md
-INFO:fabric_to_espanso:Processed: create_design_document.md
-INFO:fabric_to_espanso:Processed: create_diy.md
-INFO:fabric_to_espanso:Processed: create_formal_email.md
-INFO:fabric_to_espanso:Processed: create_git_diff_commit.md
-INFO:fabric_to_espanso:Processed: create_graph_from_input.md
-INFO:fabric_to_espanso:Processed: create_hormozi_offer.md
-INFO:fabric_to_espanso:Processed: create_idea_compass.md
-INFO:fabric_to_espanso:Processed: create_investigation_visualization.md
-INFO:fabric_to_espanso:Processed: create_keynote.md
-INFO:fabric_to_espanso:Processed: create_logo.md
-INFO:fabric_to_espanso:Processed: create_markmap_visualization.md
-INFO:fabric_to_espanso:Processed: create_mermaid_visualization.md
-INFO:fabric_to_espanso:Processed: create_mermaid_visualization_for_github.md
-INFO:fabric_to_espanso:Processed: create_micro_summary.md
-INFO:fabric_to_espanso:Processed: create_network_threat_landscape.md
-INFO:fabric_to_espanso:Processed: create_newsletter_entry.md
-INFO:fabric_to_espanso:Processed: create_npc.md
-INFO:fabric_to_espanso:Processed: create_pattern.md
-INFO:fabric_to_espanso:Processed: create_quiz.md
-INFO:fabric_to_espanso:Processed: create_reading_plan.md
-INFO:fabric_to_espanso:Processed: create_recursive_outline.md
-INFO:fabric_to_espanso:Processed: create_report_finding.md
-INFO:fabric_to_espanso:Processed: create_rpg_summary.md
-INFO:fabric_to_espanso:Processed: create_security_update.md
-INFO:fabric_to_espanso:Processed: create_show_intro.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Official/create_sigma_rules.md
-INFO:fabric_to_espanso:Processed: create_sigma_rules.md
-INFO:fabric_to_espanso:Processed: create_story_explanation.md
-INFO:fabric_to_espanso:Processed: create_stride_threat_model.md
-INFO:fabric_to_espanso:Processed: create_summary.md
-INFO:fabric_to_espanso:Processed: create_tags.md
-INFO:fabric_to_espanso:Processed: create_threat_scenarios.md
-INFO:fabric_to_espanso:Processed: create_ttrc_graph.md
-INFO:fabric_to_espanso:Processed: create_ttrc_narrative.md
-INFO:fabric_to_espanso:Processed: create_upgrade_pack.md
-INFO:fabric_to_espanso:Processed: create_user_story.md
-INFO:fabric_to_espanso:Processed: create_video_chapters.md
-INFO:fabric_to_espanso:Processed: create_visualization.md
-INFO:fabric_to_espanso:Processed: dialog_with_socrates.md
-INFO:fabric_to_espanso:Processed: explain_code.md
-INFO:fabric_to_espanso:Processed: explain_docs.md
-INFO:fabric_to_espanso:Processed: explain_math.md
-INFO:fabric_to_espanso:Processed: explain_project.md
-INFO:fabric_to_espanso:Processed: explain_terms.md
-INFO:fabric_to_espanso:Processed: export_data_as_csv.md
-INFO:fabric_to_espanso:Processed: extract_algorithm_update_recommendations.md
-INFO:fabric_to_espanso:Processed: extract_article_wisdom.md
-INFO:fabric_to_espanso:Processed: extract_book_ideas.md
-INFO:fabric_to_espanso:Processed: extract_book_recommendations.md
-INFO:fabric_to_espanso:Processed: extract_business_ideas.md
-INFO:fabric_to_espanso:Processed: extract_controversial_ideas.md
-INFO:fabric_to_espanso:Processed: extract_core_message.md
-INFO:fabric_to_espanso:Processed: extract_ctf_writeup.md
-INFO:fabric_to_espanso:Processed: extract_extraordinary_claims.md
-INFO:fabric_to_espanso:Processed: extract_ideas.md
-INFO:fabric_to_espanso:Processed: extract_insights.md
-INFO:fabric_to_espanso:Processed: extract_insights_dm.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Official/extract_instructions.md
-INFO:fabric_to_espanso:Processed: extract_instructions.md
-INFO:fabric_to_espanso:Processed: extract_jokes.md
-INFO:fabric_to_espanso:Processed: extract_latest_video.md
-INFO:fabric_to_espanso:Processed: extract_main_idea.md
-INFO:fabric_to_espanso:Processed: extract_most_redeeming_thing.md
-INFO:fabric_to_espanso:Processed: extract_patterns.md
-INFO:fabric_to_espanso:Processed: extract_poc.md
-INFO:fabric_to_espanso:Processed: extract_predictions.md
-INFO:fabric_to_espanso:Processed: extract_primary_problem.md
-INFO:fabric_to_espanso:Processed: extract_primary_solution.md
-INFO:fabric_to_espanso:Processed: extract_product_features.md
-INFO:fabric_to_espanso:Processed: extract_questions.md
-INFO:fabric_to_espanso:Processed: extract_recipe.md
-INFO:fabric_to_espanso:Processed: extract_recommendations.md
-INFO:fabric_to_espanso:Processed: extract_references.md
-INFO:fabric_to_espanso:Processed: extract_skills.md
-INFO:fabric_to_espanso:Processed: extract_song_meaning.md
-INFO:fabric_to_espanso:Processed: extract_sponsors.md
-INFO:fabric_to_espanso:Processed: extract_videoid.md
-INFO:fabric_to_espanso:Processed: extract_wisdom.md
-INFO:fabric_to_espanso:Processed: extract_wisdom_agents.md
-INFO:fabric_to_espanso:Processed: extract_wisdom_dm.md
-INFO:fabric_to_espanso:Processed: extract_wisdom_nometa.md
-INFO:fabric_to_espanso:Processed: find_hidden_message.md
-INFO:fabric_to_espanso:Processed: find_logical_fallacies.md
-INFO:fabric_to_espanso:Processed: get_wow_per_minute.md
-INFO:fabric_to_espanso:Processed: get_youtube_rss.md
-INFO:fabric_to_espanso:Processed: identify_dsrp_distinctions.md
-INFO:fabric_to_espanso:Processed: identify_dsrp_perspectives.md
-INFO:fabric_to_espanso:Processed: identify_dsrp_relationships.md
-INFO:fabric_to_espanso:Processed: identify_dsrp_systems.md
-INFO:fabric_to_espanso:Processed: identify_job_stories.md
-INFO:fabric_to_espanso:Processed: improve_academic_writing.md
-INFO:fabric_to_espanso:Processed: improve_prompt.md
-INFO:fabric_to_espanso:Processed: improve_report_finding.md
-INFO:fabric_to_espanso:Processed: improve_writing.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Official/label_and_rate.md
-INFO:fabric_to_espanso:Processed: label_and_rate.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Official/md_callout.md
-INFO:fabric_to_espanso:Processed: md_callout.md
-INFO:fabric_to_espanso:Processed: official_pattern_template.md
-INFO:fabric_to_espanso:Processed: prepare_7s_strategy.md
-INFO:fabric_to_espanso:Processed: provide_guidance.md
-INFO:fabric_to_espanso:Processed: rate_ai_response.md
-INFO:fabric_to_espanso:Processed: rate_ai_result.md
-INFO:fabric_to_espanso:Processed: rate_content.md
-INFO:fabric_to_espanso:Processed: rate_value.md
-INFO:fabric_to_espanso:Processed: raw_query.md
-INFO:fabric_to_espanso:Processed: recommend_artists.md
-INFO:fabric_to_espanso:Processed: recommend_pipeline_upgrades.md
-INFO:fabric_to_espanso:Processed: recommend_talkpanel_topics.md
-INFO:fabric_to_espanso:Processed: refine_design_document.md
-INFO:fabric_to_espanso:Processed: review_design.md
-INFO:fabric_to_espanso:Processed: show_fabric_options_markmap.md
-INFO:fabric_to_espanso:Processed: solve_with_cot.md
-INFO:fabric_to_espanso:Processed: suggest_pattern.md
-INFO:fabric_to_espanso:Processed: summarize.md
-INFO:fabric_to_espanso:Processed: summarize_debate.md
-INFO:fabric_to_espanso:Processed: summarize_git_changes.md
-INFO:fabric_to_espanso:Processed: summarize_git_diff.md
-INFO:fabric_to_espanso:Processed: summarize_lecture.md
-INFO:fabric_to_espanso:Processed: summarize_legislation.md
-INFO:fabric_to_espanso:Processed: summarize_meeting.md
-INFO:fabric_to_espanso:Processed: summarize_micro.md
-INFO:fabric_to_espanso:Processed: summarize_newsletter.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Official/summarize_paper.md
-INFO:fabric_to_espanso:Processed: summarize_paper.md
-INFO:fabric_to_espanso:Processed: summarize_prompt.md
-INFO:fabric_to_espanso:Processed: summarize_pull-requests.md
-INFO:fabric_to_espanso:Processed: summarize_rpg_session.md
-INFO:fabric_to_espanso:Processed: to_flashcards.md
-INFO:fabric_to_espanso:Processed: transcribe_minutes.md
-INFO:fabric_to_espanso:Processed: translate.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Official/tweet.md
-INFO:fabric_to_espanso:Processed: tweet.md
-INFO:fabric_to_espanso:Processed: write_essay.md
-INFO:fabric_to_espanso:Processed: write_hackerone_report.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Official/write_latex.md
-INFO:fabric_to_espanso:Processed: write_latex.md
-INFO:fabric_to_espanso:Processed: write_micro_essay.md
-INFO:fabric_to_espanso:Processed: write_nuclei_template_rule.md
-INFO:fabric_to_espanso:Processed: write_pull-request.md
-INFO:fabric_to_espanso:Processed: write_semgrep_rule.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Own/Create Costar prompt.md
-INFO:fabric_to_espanso:Processed: Create Costar prompt.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Own/SolveItWithCode - Review REPL-driven process detailed extreme.md
-INFO:fabric_to_espanso:Processed: SolveItWithCode - Review REPL-driven process detailed extreme.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Own/SolveItWithCode - Review REPL-driven process detailed.md
-INFO:fabric_to_espanso:Processed: SolveItWithCode - Review REPL-driven process detailed.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Own/SolveItWithCode - Review REPL-driven process.md
-INFO:fabric_to_espanso:Processed: SolveItWithCode - Review REPL-driven process.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Own/Start in depth discussion with functions.md
-INFO:fabric_to_espanso:Processed: Start in depth discussion with functions.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Own/Translate to Dutch or from Dutch to English.md
-INFO:fabric_to_espanso:Processed: Translate to Dutch or from Dutch to English.md
-WARNING:fabric_to_espanso:No sections extracted from /mnt/c/Obsidian/BrainCave/Extra/FabricPatterns/Own/Website description.md
-INFO:fabric_to_espanso:Processed: Website description.md
-INFO:fabric_to_espanso:Successfully processed 189 files
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/scroll "HTTP/1.1 200 OK"
-INFO:fabric_to_espanso:Changes detected: 0 new, 0 modified, 0 deleted
-INFO:fabric_to_espanso:Initializing FastEmbed model.
-Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files:  20%|██        | 1/5 [00:00<00:01,  2.68it/s]Fetching 5 files:  40%|████      | 2/5 [00:06<00:10,  3.60s/it]Fetching 5 files: 100%|██████████| 5/5 [00:06<00:00,  1.25s/it]
-INFO:fabric_to_espanso:Database update completed successfully
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/scroll "HTTP/1.1 200 OK"
-INFO:fabric_to_espanso:YAML file generated successfully at /mnt/c/Users/barle/AppData/Roaming/espanso/match/fabric_patterns.yml
-INFO:httpx:HTTP Request: POST http://localhost:6333/collections/markdown_files/points/scroll "HTTP/1.1 200 OK"
-INFO:fabric_to_espanso:YAML file generated successfully at /mnt/c/Users/barle/AppData/Roaming/espanso/match/fabric_patterns.yml
-INFO:httpx:HTTP Request: GET http://localhost:6333/collections/markdown_files "HTTP/1.1 200 OK"
