@@ -43,6 +43,11 @@ def find_markdown_files(
             # Skip if too deep
             if len(file_path.parts) - root_parts > max_depth:
                 continue
+            # Skip README.md files
+            if file_path.name.lower() == "readme.md":
+                continue
+            if file_path.name.lower() == "user.md":
+                continue
             if file_path.is_file():
                 files.append(file_path)
                 
@@ -55,7 +60,7 @@ def find_markdown_files(
 
 def process_markdown_file(
     file_path: Path,
-    trigger_prefix: str = "/:"
+    trigger_prefix: str
 ) -> Optional[Dict[str, Any]]:
     """Process a single markdown file.
     
@@ -76,7 +81,7 @@ def process_markdown_file(
             extracted_sections = content
             
         return {
-            'filename': file_path.name,
+            'filename': file_path.parent.name,
             'content': content,
             'purpose': extracted_sections,
             'last_modified': datetime.fromtimestamp(file_path.stat().st_mtime),
@@ -92,7 +97,7 @@ def process_markdown_files(
     markdown_folder: Path | str,
     # TODO: make 'max_depth' a parameter
     max_depth: int = 2,
-    trigger_prefix: str = "/:"
+    trigger_prefix: str = ";;fab"
 ) -> List[Dict[str, Any]]:
     """Process all markdown files in directory.
     

@@ -14,8 +14,9 @@ windows_user = subprocess.check_output(['cmd.exe', '/c', 'echo %USERNAME%'], tex
 # User parameters
 #
 # Location of input and output files
-MARKDOWN_FOLDER="/mnt/c/Obsidian/BrainCave/Extra/FabricPatterns"
+MARKDOWN_FOLDER="/home/jelle/.config/fabric/patterns"
 YAML_OUTPUT_FOLDER=f"/mnt/c/Users/{windows_user}/AppData/Roaming/espanso/match"
+OBSIDIAN_OUTPUT_FOLDER=f"/mnt/c/Obsidian/BrainCave/Extra/textgenerator/templates/fabric"
 
 # Headings to extract from markdown files
 BASE_WORDS = ['Identity', 'Purpose', 'Task', 'Goal']

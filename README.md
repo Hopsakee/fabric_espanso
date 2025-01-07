@@ -51,7 +51,7 @@ Create a PowerShell script with the following content to start the application:
 $startInfo = New-Object System.Diagnostics.ProcessStartInfo
 $startInfo.Filename = "wsl.exe"
 # Use -c flag to let the command use the WSL2 Ubuntu folder system and not the Windows
-$startInfo.Arguments = "bash -c ~/Tools/pythagora-core/workspace/fabric_to_espanso/src/search_qdrant/run_streamlit.sh"
+$startInfo.Arguments = "bash -c ~/Tools/pythagora-core/workspace/fabrics_processor/src/search_qdrant/run_streamlit.sh"
 $startInfo.UseShellExecute = $false
 $startInfo.RedirectStandardOutput = $true
 $startInfo.RedirectStandardError = $true

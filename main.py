@@ -5,13 +5,13 @@ import signal
 import logging
 from contextlib import contextmanager
 
-from src.fabric_to_espanso.database import initialize_qdrant_database
-from src.fabric_to_espanso.file_change_detector import detect_file_changes
-from src.fabric_to_espanso.database_updater import update_qdrant_database
-from src.fabric_to_espanso.yaml_file_generator import generate_yaml_file
-from src.fabric_to_espanso.logger import setup_logger
-from src.fabric_to_espanso.config import config
-from src.fabric_to_espanso.exceptions import (
+from src.fabrics_processor.database import initialize_qdrant_database
+from src.fabrics_processor.file_change_detector import detect_file_changes
+from src.fabrics_processor.database_updater import update_qdrant_database
+from src.fabrics_processor.yaml_file_generator import generate_yaml_file
+from src.fabrics_processor.logger import setup_logger
+from src.fabrics_processor.config import config
+from src.fabrics_processor.exceptions import (
     DatabaseConnectionError,
     DatabaseInitializationError
 )

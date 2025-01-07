@@ -3,10 +3,9 @@ from qdrant_client.http.models import PointStruct, Filter, FieldCondition, Match
 from fastembed import TextEmbedding
 import logging
 import uuid
-from .yaml_file_generator import generate_yaml_file
-
-from parameters import USE_FASTEMBED, EMBED_MODEL
-from src.fabric_to_espanso.config import config
+from .output_files_generator import generate_yaml_file, generate_markdown_files
+from parameters import USE_FASTEMBED, EMBED_MODEL, OBSIDIAN_OUTPUT_FOLDER
+from src.fabrics_processor.config import config
 
 logger = logging.getLogger('fabric_to_espanso')
 
@@ -126,6 +125,8 @@ def update_qdrant_database(client: QdrantClient, new_files: list, modified_files
 
         # Generate new YAML file after database update
         generate_yaml_file(client, config.yaml_output_folder)
+        # Generate markdown files after database update
+        generate_markdown_files(client, OBSIDIAN_OUTPUT_FOLDER)
 
     except Exception as e:
         logger.error(f"Error updating Qdrant database: {str(e)}", exc_info=True)

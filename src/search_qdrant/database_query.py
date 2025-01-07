@@ -1,5 +1,5 @@
 import logging
-from src.fabric_to_espanso.database import initialize_qdrant_database
+from src.fabrics_processor.database import initialize_qdrant_database
 from fastembed import TextEmbedding
 from qdrant_client import QdrantClient
 from qdrant_client.models import QueryResponse

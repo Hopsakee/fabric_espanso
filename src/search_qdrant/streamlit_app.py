@@ -1,14 +1,14 @@
 import streamlit as st
 import pyperclip
 from pathlib import Path
-from src.fabric_to_espanso.database import initialize_qdrant_database
-from src.fabric_to_espanso.database_updater import update_qdrant_database
-from src.fabric_to_espanso.file_change_detector import detect_file_changes
-from src.fabric_to_espanso.yaml_file_generator import generate_yaml_file
+from src.fabrics_processor.database import initialize_qdrant_database
+from src.fabrics_processor.database_updater import update_qdrant_database
+from src.fabrics_processor.file_change_detector import detect_file_changes
+from src.fabrics_processor.yaml_file_generator import generate_yaml_file
 from src.search_qdrant.database_query import query_qdrant_database
 import logging
 import atexit
-from src.fabric_to_espanso.config import config
+from src.fabrics_processor.config import config
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
