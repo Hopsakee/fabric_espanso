@@ -1,18 +1,18 @@
 import streamlit as st
 import pyperclip
 from pathlib import Path
-from src.fabrics_processor.database import initialize_qdrant_database
+from src.fabrics_processor.database import initialize_qdrant_database, validate_database_payload
 from src.fabrics_processor.database_updater import update_qdrant_database
 from src.fabrics_processor.file_change_detector import detect_file_changes
-from src.fabrics_processor.yaml_file_generator import generate_yaml_file
 from src.search_qdrant.database_query import query_qdrant_database
+from src.fabrics_processor.obsidian2fabric import sync_folders
+from src.fabrics_processor.logger import setup_logger
 import logging
 import atexit
 from src.fabrics_processor.config import config
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = setup_logger()
 
 def init_session_state():
     """Initialize session state variables."""
@@ -61,7 +61,7 @@ def show_comparison_view(prompts):
                 if new_trigger != current_trigger:
                     try:
                         st.session_state.client.set_payload(
-                            collection_name="markdown_files",
+                            collection_name=config.embedding.collection_name,
                             payload={"trigger": new_trigger},
                             points=[prompt.id]
                         )
@@ -103,7 +103,7 @@ def search_interface():
                 query=query,
                 client=st.session_state.client,
                 num_results=5,
-                collection_name="markdown_files"
+                collection_name=config.embedding.collection_name
             )
             
             if results:
@@ -135,35 +135,38 @@ def search_interface():
             st.error(f"Error searching database: {e}")
 
 def update_database():
-    """Update the database and YAML files."""
+    """Update the markdown folder with prompt files from Obsidian.
+    Then update the Qdrant database.
+    Finally based on the Qdrant database create a new espanso YAML file  and
+    the Obsidian Textgenerator markdown files."""
     try:
         with st.spinner("Processing markdown files..."):
+            # First check if there are any changes in the prompt files in Obsidian.
+            # If so, add them to the markdown folder before updating the database.
+            sync_folders(source_dir=Path(config.obsidian_input_folder), target_dir=Path(config.fabric_patterns_folder))
+
             # Get current collection info
-            collection_info = st.session_state.client.get_collection("markdown_files")
+            collection_info = st.session_state.client.get_collection(config.embedding.collection_name)
             initial_points = collection_info.points_count
             
             # Detect file changes
             new_files, modified_files, deleted_files = detect_file_changes(
                 client=st.session_state.client,
-                markdown_folder=config.markdown_folder
+                fabric_patterns_folder=config.fabric_patterns_folder
             )
             
-            # Update the database
-            update_qdrant_database(
-                client=st.session_state.client,
-                new_files=new_files,
-                modified_files=modified_files,
-                deleted_files=deleted_files
-            )
-            
-            # Generate YAML file
-            generate_yaml_file(
-                client=st.session_state.client,
-                yaml_output_folder=config.yaml_output_folder
-            )
+            # Update the database if chenges are detected
+            if any([new_files, modified_files, deleted_files]):
+                update_qdrant_database(
+                    client=st.session_state.client,
+                    collection_name=config.embedding.collection_name,
+                    new_files=new_files,
+                    modified_files=modified_files,
+                    deleted_files=deleted_files
+                )
             
             # Get updated collection info
-            collection_info = st.session_state.client.get_collection("markdown_files")
+            collection_info = st.session_state.client.get_collection(config.embedding.collection_name)
             final_points = collection_info.points_count
             
             # Show summary
@@ -212,7 +215,7 @@ def main():
         st.image(str(image_path), width=200, use_container_width=False)
         
         st.title("Prompt Manager")
-        page = st.radio("Select Option:", ["Search for prompts", "Update database and YAML files"])
+        page = st.radio("Select Option:", ["Search for prompts", "Update database and prompt files"])
         
         if st.button("Quit"):
             if hasattr(st.session_state.client, '_transport'):

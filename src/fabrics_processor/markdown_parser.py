@@ -1,7 +1,6 @@
 """Markdown parsing module for fabric-to-espanso."""
 from typing import Tuple, List, Optional, Set
 from pathlib import Path
-import re
 import regex
 import logging
 

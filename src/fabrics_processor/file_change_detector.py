@@ -13,7 +13,7 @@ from .exceptions import DatabaseError
 
 logger = logging.getLogger('fabric_to_espanso')
 
-def get_stored_files(client: QdrantClient, collection_name: str = "markdown_files") -> Dict[str, Any]:
+def get_stored_files(client: QdrantClient, collection_name: str = config.embedding.collection_name) -> Dict[str, Dict[str, Any]]:
     """Get all files stored in the database.
     
     Args:
@@ -47,6 +47,7 @@ def compare_file_dates(
     stored_date_str: str
 ) -> bool:
     """Compare file modification dates.
+    note: This function isn't used anymore. Replaced by compare_file_sizes.
     
     Args:
         current_date: Current file's modification date
@@ -60,7 +61,7 @@ def compare_file_dates(
 
 def detect_file_changes(
     client: QdrantClient,
-    markdown_folder: str = config.markdown_folder
+    fabric_patterns_folder: str
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], List[str]]:
     """Detect changes in markdown files by comparing with database.
     
@@ -80,8 +81,8 @@ def detect_file_changes(
     """
     try:
         # Get current files
-        current_files = process_markdown_files(markdown_folder)
-        logger.debug(f"Found {len(current_files)} files in {markdown_folder}")
+        current_files = process_markdown_files(fabric_patterns_folder)
+        logger.debug(f"Found {len(current_files)} files in {fabric_patterns_folder}")
         
         # Get stored files from database
         stored_files = get_stored_files(client)
@@ -98,10 +99,9 @@ def detect_file_changes(
             if filename not in stored_files:
                 logger.debug(f"New file detected: {filename}")
                 new_files.append(file)
-            elif compare_file_dates(
-                file['last_modified'],
-                stored_files[filename]['payload']['date']
-            ):
+            # compare on file size, not on modified date, because fabric -U will change the modified date of the file
+            # even if the content hasn't changed
+            elif file['filesize'] != stored_files[filename]['payload']['filesize']:
                 logger.debug(f"Modified file detected: {filename}")
                 modified_files.append(file)
         

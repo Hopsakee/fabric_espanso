@@ -52,8 +52,8 @@ def process_changes(client) -> bool:
     """
     try:
         # Detect file changes
-        new_files, modified_files, deleted_files = detect_file_changes(client, config.markdown_folder)
-        
+        new_files, modified_files, deleted_files = detect_file_changes(client, config.fabric_patterns_folder)
+
         # Log the results
         if new_files:
             logger.info(f"New files: {[file['filename'] for file in new_files]}")
@@ -67,8 +67,9 @@ def process_changes(client) -> bool:
             logger.info("Changes detected. Updating database...")
             update_qdrant_database(client, new_files, modified_files, deleted_files)
             
-        # Always generate YAML file to ensure consistency
+        # Always generate output files to ensure consistency
         generate_yaml_file(client, config.yaml_output_folder)
+
         return True
         
     except Exception as e:
@@ -91,8 +92,10 @@ def main() -> Optional[int]:
         # Log configuration
         logger.info(f"Using configuration:")
         logger.info(f"  Database URL: {config.database.url}")
-        logger.info(f"  Markdown folder: {config.markdown_folder}")
+        logger.info(f"  Fabric patterns folder: {config.fabric_patterns_folder}")
         logger.info(f"  YAML output folder: {config.yaml_output_folder}")
+        logger.info(f"  Obsidian textgenerator markdown output folder: {config.markdown_output_folder}")
+        logger.info(f"  Obsidian personal prompts input folder: {config.obsidian_input_folder}") 
         
         # Process changes with managed client
         with managed_qdrant_client() as client:

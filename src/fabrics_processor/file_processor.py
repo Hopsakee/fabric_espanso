@@ -85,6 +85,7 @@ def process_markdown_file(
             'content': content,
             'purpose': extracted_sections,
             'last_modified': datetime.fromtimestamp(file_path.stat().st_mtime),
+            'filesize': file_path.stat().st_size,
             'trigger': trigger_prefix,
             'label': file_path.stem  # filename without extension
         }
@@ -125,12 +126,12 @@ def process_markdown_files(
             try:
                 if result := process_markdown_file(file_path, trigger_prefix):
                     processed_files.append(result)
-                    logger.info(f"Processed: {file_path.name}")
+                    logger.info(f"Processed: {file_path.parent.name}")
             except ProcessingError as e:
                 logger.error(str(e))
                 continue
                 
-        logger.info(f"Successfully processed {len(processed_files)} files")
+        logger.info(f"Successfully processed {len(processed_files)} files in fabric patterns folder")
         return processed_files
         
     except Exception as e:

@@ -1,15 +1,14 @@
 """Database management for fabric-to-espanso."""
-from typing import Optional, List
+from typing import Optional, List, Dict
 import logging
 import time
 
 from qdrant_client import QdrantClient
 from qdrant_client.http import models, exceptions
-from qdrant_client.http.models import Distance, VectorParams
+from qdrant_client.http.models import Distance, VectorParams, PointStruct
 
 from .config import config
-from parameters import COLLECTION_NAME
-from .exceptions import DatabaseConnectionError, CollectionError, DatabaseInitializationError
+from .exceptions import DatabaseConnectionError, CollectionError, DatabaseInitializationError, ConfigurationError
 
 logger = logging.getLogger('fabric_to_espanso')
 
@@ -48,7 +47,7 @@ def create_database_connection(url: Optional[str] = None) -> QdrantClient:
             time.sleep(config.database.retry_delay)
 
 def initialize_qdrant_database(
-    collection_name: str = COLLECTION_NAME,
+    collection_name: str = config.embedding.collection_name,
     use_fastembed: bool = config.embedding.use_fastembed,
     embed_model: str = config.embedding.model_name
 ) -> QdrantClient:
@@ -129,3 +128,88 @@ def initialize_qdrant_database(
         if isinstance(e, (DatabaseConnectionError, CollectionError)):
             raise
         raise DatabaseInitializationError(str(e)) from e
+
+def validate_database_payload(
+    client: QdrantClient,
+    collection_name: str,
+    ) -> Dict:
+    """Validate the payload of all points in the Qdrant database.
+    
+    Args:
+        client: Initialized Qdrant client
+        collection_name: Name of the collection to validate
+    """
+
+    # First validate existing points in database
+    logger.info("Validating existing database points...")
+    offset = None
+    
+    while True:
+        scroll_result = client.scroll(
+            collection_name=collection_name,
+            limit=5, # Process in batches of 5
+            offset=offset
+        )
+        
+        points, offset = scroll_result
+        
+        for point in points:
+            try:
+                fixed_payload = validate_point_payload(point.payload, point.id)
+                if fixed_payload != point.payload:
+                    # Update point with fixed payload
+                    point_struct = PointStruct(
+                        id=point.id,
+                        vector=point.vector,
+                        payload=fixed_payload
+                    )
+                    client.upsert(collection_name=collection_name, points=[point_struct])
+                    logger.info(f"Fixed and updated point {point.id} in database")
+            except ConfigurationError as e:
+                logger.error(str(e))
+        
+        if not offset:  # No more points to process
+            break
+    
+    logger.info("Database validation completed")
+
+def validate_point_payload(payload: dict, point_id: Optional[str] = None) -> dict:
+    """Validate and fix point payload fields.
+    Only use if somehow many points have become corrupted.
+    
+    Args:
+        payload (dict): Point payload to validate
+        point_id (str, optional): ID of the point for logging purposes
+        
+    Returns:
+        dict: Validated and potentially fixed payload
+        
+    Raises:
+        ConfigurationError: If required fields are missing and cannot be fixed
+    """
+    print(f"Validating point {point_id if point_id else ''}")
+    from .exceptions import ConfigurationError
+    
+    # Check for critical fields
+    if 'filename' not in payload or 'content' not in payload:
+        error_msg = f"Point {point_id if point_id else ''} is missing critical fields: "
+        error_msg += "'filename' and/or 'content' are required and cannot be defaulted"
+        raise ConfigurationError(error_msg)
+        
+    # Copy payload to avoid modifying the original
+    fixed_payload = payload.copy()
+    
+    # Apply defaults and fixes for non-critical fields
+    if 'purpose' not in fixed_payload or not fixed_payload['purpose']:
+        fixed_payload['purpose'] = fixed_payload['content']
+        logger.warning(f"Point {point_id if point_id else ''}: 'purpose' was missing, set to content value")
+        
+    if 'filesize' not in fixed_payload:
+        fixed_payload['filesize'] = self.required_fields_defaults['filesize']
+        logger.warning(f"Point {point_id if point_id else ''}: 'filesize' was missing, set to {self.required_fields_defaults['filesize']}")
+        
+    if 'trigger' not in fixed_payload:
+        fixed_payload['trigger'] = self.required_fields_defaults['trigger']
+        logger.warning(f"Point {point_id if point_id else ''}: 'trigger' was missing, set to {self.required_fields_defaults['trigger']}")
+        
+    return fixed_payload

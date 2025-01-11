@@ -1,15 +1,15 @@
 import logging
 from src.fabrics_processor.database import initialize_qdrant_database
-from fastembed import TextEmbedding
 from qdrant_client import QdrantClient
 from qdrant_client.models import QueryResponse
 import argparse
+from src.fabrics_processor.config import config
 
 def query_qdrant_database(
       query: str,
       client: QdrantClient,
       num_results: int = 5,
-      collection_name: str = "markdown_files") -> list[QueryResponse]:
+      collection_name: str = config.embedding.collection_name) -> list[QueryResponse]:
       """Query the Qdrant database for similar documents.
       
       Args:
@@ -37,7 +37,7 @@ def main():
       parser = argparse.ArgumentParser(description="Query Qdrant database")
       parser.add_argument("query", type=str, help="The search query text")
       parser.add_argument("--num_results", "-n", type=int, default=5, help="The number of results to return (default: 5)")
-      parser.add_argument("--collection_name", "-c", type=str, default="markdown_files", help="The name of the collection to query (default: markdown_files)")
+      parser.add_argument("--collection_name", "-c", type=str, default=config.embedding.collection_name, help="The name of the collection to query.")
 
       args = parser.parse_args()
 
