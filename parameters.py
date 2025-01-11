@@ -30,8 +30,12 @@ YAML_OUTPUT_FOLDER=f"/mnt/c/Users/{windows_user}/AppData/Roaming/espanso/match"
 
 # Qdrant database parameters
 # TODO: deze paramater wordt nu niet in het script gebruikt, is nu hard coded, dit moet wel gebruikt worden
+# Local:
 QDRANT_URL = "http://localhost:6333"
 COLLECTION_NAME = "fabric_patterns"
+# Cloud:
+# QDRANT_URL = "https://91ed3a93-6135-4951-a624-1c8c2878240d.europe-west3-0.gcp.cloud.qdrant.io:6333"
+# COLLECTION_NAME = "fabric_patterns"
 
 # Required fields for database points
 REQUIRED_FIELDS = ['filename', 'content', 'purpose', 'filesize', 'trigger']
