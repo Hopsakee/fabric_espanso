@@ -1,7 +1,7 @@
 import streamlit as st
 import pyperclip
 from pathlib import Path
-from src.fabrics_processor.database import initialize_qdrant_database, validate_database_payload
+from src.fabrics_processor.database import initialize_qdrant_database
 from src.fabrics_processor.database_updater import update_qdrant_database
 from src.fabrics_processor.file_change_detector import detect_file_changes
 from src.search_qdrant.database_query import query_qdrant_database
@@ -17,7 +17,7 @@ logger = setup_logger()
 def init_session_state():
     """Initialize session state variables."""
     if 'client' not in st.session_state:
-        client = initialize_qdrant_database()
+        client = initialize_qdrant_database(api_key=st.secrets["api_key"])
         st.session_state.client = client
         # Register cleanup function
         atexit.register(lambda: client.close() if hasattr(client, '_transport') else None)

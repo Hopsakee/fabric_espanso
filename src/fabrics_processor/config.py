@@ -14,6 +14,7 @@ from parameters import (
     OBSIDIAN_OUTPUT_FOLDER,
     OBSIDIAN_INPUT_FOLDER,
     BASE_WORDS,
+    QDRANT_URL,
     USE_FASTEMBED,
     EMBED_MODEL,
     COLLECTION_NAME,
@@ -26,10 +27,11 @@ logger = logging.getLogger('fabric_to_espanso')
 @dataclass
 class DatabaseConfig:
     """Database configuration settings."""
-    url: str = "http://localhost:6333"
+    url: str = QDRANT_URL
     max_retries: int = 3
     retry_delay: float = 1.0
     timeout: float = 10.0
+    api_key: Optional[str] = None
     required_fields: list = field(default_factory=lambda: REQUIRED_FIELDS)
     required_fields_defaults: dict = field(default_factory=lambda: REQUIRED_FIELDS_DEFAULTS)
 

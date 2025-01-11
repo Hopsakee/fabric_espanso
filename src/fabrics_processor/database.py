@@ -12,7 +12,7 @@ from .exceptions import DatabaseConnectionError, CollectionError, DatabaseInitia
 
 logger = logging.getLogger('fabric_to_espanso')
 
-def create_database_connection(url: Optional[str] = None) -> QdrantClient:
+def create_database_connection(url: Optional[str] = None, api_key: Optional[str] = None) -> QdrantClient:
     """Create a database connection.
     
     Args:
@@ -29,7 +29,8 @@ def create_database_connection(url: Optional[str] = None) -> QdrantClient:
         try:
             client = QdrantClient(
                 url=url,
-                timeout=config.database.timeout
+                timeout=config.database.timeout,
+                api_key=api_key
             )
             # Test connection
             client.get_collections()
@@ -47,6 +48,8 @@ def create_database_connection(url: Optional[str] = None) -> QdrantClient:
             time.sleep(config.database.retry_delay)
 
 def initialize_qdrant_database(
+    url: str = config.database.url,
+    api_key: Optional[str] = "",
     collection_name: str = config.embedding.collection_name,
     use_fastembed: bool = config.embedding.use_fastembed,
     embed_model: str = config.embedding.model_name
@@ -71,7 +74,7 @@ def initialize_qdrant_database(
         config.validate()
         
         # Create database connection
-        client = create_database_connection()
+        client = create_database_connection(url=url, api_key=api_key)
         
         # Check if collection exists
         collections = client.get_collections()
