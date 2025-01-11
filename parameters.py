@@ -4,29 +4,38 @@ import os
 
 # 
 # Initialize some automated variables
-#
-# Project root directory
-PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-
-# Get Windows user profile path
-import subprocess
-windows_user = subprocess.check_output(['cmd.exe', '/c', 'echo %USERNAME%'], text=True).strip()
-
+# only needed for updating the database and writing the YAML espanso file
+# and the markdown Obsidian files
+# So not necessary for running the streamlit app with query only
+# These automated variables don't work in the cloud obviously
+# because the cloud doesn't have a local filesystem
+# Therefore we first check if we are running in a local WSL environment
 # 
-# User parameters
-#
-# Location of input and output files
-# TODO: make us of ~ possible in setting of path
-FABRIC_PATTERNS_FOLDER="/home/jelle/.config/fabric/patterns"
-OBSIDIAN_OUTPUT_FOLDER="/mnt/c/Obsidian/BrainCave/Extra/textgenerator/templates/fabric"
-OBSIDIAN_INPUT_FOLDER="/mnt/c/Obsidian/BrainCave/d5 WDODelta/50-59 Programmeren en development/56 Generative AI en LLM/56.15 PromptsLibrary"
+# Project root directory
+is_wsl = os.environ.get('WSL_DISTRO_NAME') is not None
 
-# Headings to extract from markdown files
-BASE_WORDS = ['Identity', 'Purpose', 'Task', 'Goal']
+if is_wsl:
+    PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-# Espanso parameters
-DEFAULT_TRIGGER = ";;fab"
-YAML_OUTPUT_FOLDER=f"/mnt/c/Users/{windows_user}/AppData/Roaming/espanso/match"
+    # Get Windows user profile path
+    import subprocess
+    windows_user = subprocess.check_output(['cmd.exe', '/c', 'echo %USERNAME%'], text=True).strip()
+
+    # 
+    # User parameters
+    #
+    # Location of input and output files
+    # TODO: make us of ~ possible in setting of path
+    FABRIC_PATTERNS_FOLDER="/home/jelle/.config/fabric/patterns"
+    OBSIDIAN_OUTPUT_FOLDER="/mnt/c/Obsidian/BrainCave/Extra/textgenerator/templates/fabric"
+    OBSIDIAN_INPUT_FOLDER="/mnt/c/Obsidian/BrainCave/d5 WDODelta/50-59 Programmeren en development/56 Generative AI en LLM/56.15 PromptsLibrary"
+
+    # Headings to extract from markdown files
+    BASE_WORDS = ['Identity', 'Purpose', 'Task', 'Goal']
+
+    # Espanso parameters
+    DEFAULT_TRIGGER = ";;fab"
+    YAML_OUTPUT_FOLDER=f"/mnt/c/Users/{windows_user}/AppData/Roaming/espanso/match"
 
 # Qdrant database parameters
 # TODO: deze paramater wordt nu niet in het script gebruikt, is nu hard coded, dit moet wel gebruikt worden
