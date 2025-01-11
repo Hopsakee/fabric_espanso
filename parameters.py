@@ -20,24 +20,25 @@ if is_wsl:
     # Get Windows user profile path
     import subprocess
     windows_user = subprocess.check_output(['cmd.exe', '/c', 'echo %USERNAME%'], text=True).strip()
+    # 
+    # User parameters
+    #
+    # Location of input and output files
+    # TODO: make us of ~ possible in setting of path
+    FABRIC_PATTERNS_FOLDER="/home/jelle/.config/fabric/patterns"
+    OBSIDIAN_OUTPUT_FOLDER="/mnt/c/Obsidian/BrainCave/Extra/textgenerator/templates/fabric"
+    OBSIDIAN_INPUT_FOLDER="/mnt/c/Obsidian/BrainCave/d5 WDODelta/50-59 Programmeren en development/56 Generative AI en LLM/56.15 PromptsLibrary"
+    YAML_OUTPUT_FOLDER=f"/mnt/c/Users/{windows_user}/AppData/Roaming/espanso/match"
 else:
-    windows_user = "dummy"
-
-# 
-# User parameters
-#
-# Location of input and output files
-# TODO: make us of ~ possible in setting of path
-FABRIC_PATTERNS_FOLDER="/home/jelle/.config/fabric/patterns"
-OBSIDIAN_OUTPUT_FOLDER="/mnt/c/Obsidian/BrainCave/Extra/textgenerator/templates/fabric"
-OBSIDIAN_INPUT_FOLDER="/mnt/c/Obsidian/BrainCave/d5 WDODelta/50-59 Programmeren en development/56 Generative AI en LLM/56.15 PromptsLibrary"
+    windows_user = "cloud_dummy"
+    FABRIC_PATTERNS_FOLDER="cloud_dummy"
+    OBSIDIAN_OUTPUT_FOLDER="cloud_dummy"
+    OBSIDIAN_INPUT_FOLDER="cloud_dummy"
+    YAML_OUTPUT_FOLDER="cloud_dummy"
 
 # Headings to extract from markdown files
 BASE_WORDS = ['Identity', 'Purpose', 'Task', 'Goal']
 
-# Espanso parameters
-DEFAULT_TRIGGER = ";;fab"
-YAML_OUTPUT_FOLDER=f"/mnt/c/Users/{windows_user}/AppData/Roaming/espanso/match"
 
 # Qdrant database parameters
 # TODO: deze paramater wordt nu niet in het script gebruikt, is nu hard coded, dit moet wel gebruikt worden
@@ -49,6 +50,8 @@ QDRANT_URL = "https://91ed3a93-6135-4951-a624-1c8c2878240d.europe-west3-0.gcp.cl
 COLLECTION_NAME = "fabric_patterns"
 
 # Required fields for database points
+# TODO: default trigger wordt nu twee keer gedefinieerd, oplossen
+DEFAULT_TRIGGER = ";;fab"
 REQUIRED_FIELDS = ['filename', 'content', 'purpose', 'filesize', 'trigger']
 REQUIRED_FIELDS_DEFAULTS = {
     'trigger': ';;fab',

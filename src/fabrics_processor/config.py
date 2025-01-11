@@ -122,7 +122,7 @@ class Config:
             raise ConfigurationError("Obsidian input folder path to find the personal prompts stored in Obsidian cannot be empty")
 
         for path in [self.fabric_patterns_folder, self.yaml_output_folder, self.obsidian_output_folder, self.obsidian_input_folder]:
-            if not Path(path).is_dir():
+            if not path == "cloud_dummy" and not Path(path).is_dir():
                 from .exceptions import ConfigurationError
                 raise ConfigurationError(f"{path} is not a valid directory")
 # Global configuration instance
