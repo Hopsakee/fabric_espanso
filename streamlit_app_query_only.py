@@ -53,7 +53,8 @@ def show_comparison_view(prompts):
     
     # Handle selection
     if selected_idx is not None:
-        pyperclip.copy(prompts[selected_idx].metadata['content'])
+        st.button("Copy to clipboard", on_click=lambda: st.write(f'<script>navigator.clipboard.writeText("{prompts[selected_idx].metadata["content"]}");</script>', unsafe_allow_html=True))
+        # pyperclip.copy(prompts[selected_idx].metadata['content'])
         st.success(f"Copied {prompts[selected_idx].metadata['filename']} to clipboard!")
         # Clear comparison view
         st.session_state.comparing = False
@@ -90,10 +91,10 @@ def search_interface():
                 if selected:
                     col1, col2 = st.columns(2)
                     with col1:
-                        if st.button("Use: copy to clipboard"):
-                            if len(selected) == 1:
-                                pyperclip.copy(selected[0].metadata['content'])
-                                st.success("Copied to clipboard!")
+                        if len(selected) == 1:
+                            # pyperclip.copy(selected[0].metadata['content'])
+                            st.button("Use: copy to clipboard", on_click=lambda: st.write(f'<script>navigator.clipboard.writeText("{selected[0].metadata["content"]}")</script>', unsafe_allow_html=True))
+                            st.success("Copied to clipboard!")
                     
                     with col2:
                         if len(selected) > 1 and st.button("Compare"):
