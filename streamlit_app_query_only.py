@@ -6,6 +6,7 @@ from src.fabrics_processor.logger import setup_logger
 import logging
 import atexit
 from src.fabrics_processor.config import config
+import time
 
 # Configure logging
 logger = setup_logger()
@@ -45,47 +46,18 @@ def show_comparison_view(prompts):
         with col:
             st.markdown(f"### {prompt.metadata['filename']}")
             
-            # Use this prompt button
-            if st.button(f"Use this prompt", key=f"compare_use_{idx}"):
-                selected_idx = idx
-            
             # Display content as markdown
             st.markdown("### Content")
-            st.markdown(prompt.metadata["content"])
+            st.code(prompt.metadata["content"], language="markdown", wrap_lines=True)
+            
+            # Add copy button for each prompt
+            if st.button(f"Use this prompt", key=f"compare_use_{idx}"):
+                st.code(prompt.metadata["content"], language="markdown", wrap_lines=True)
+                selected_idx = idx
     
     # Handle selection
     if selected_idx is not None:
-        # Try pyperclip first
-        try:
-            pyperclip.copy(prompts[selected_idx].metadata['content'])
-        except:
-            pass  # Fallback to JavaScript if pyperclip fails
-        
-        # Escape special characters and prepare content for JS
-        content = prompts[selected_idx].metadata['content'].replace('\\', '\\\\').replace("'", "\\'").replace('\n', '\\n')
-        js = f"""
-        <script>
-            try {{
-                navigator.clipboard.writeText('{content}').then(function() {{
-                    window.parent.document.querySelector('[data-testid="stMarkdownContainer"]').innerHTML = '<p class="success" id="status-{st.session_state.status_key}">✅ Copied to clipboard!</p>';
-                }}).catch(function(err) {{
-                    console.error('Failed to copy text: ', err);
-                    window.parent.document.querySelector('[data-testid="stMarkdownContainer"]').innerHTML = '<p class="error" id="status-{st.session_state.status_key}">❌ Failed to copy to clipboard</p>';
-                }});
-            }} catch(err) {{
-                console.error('Error: ', err);
-            }}
-        </script>
-        <style>
-            .success {{ color: #00cc00; }}
-            .error {{ color: #ff0000; }}
-        </style>
-        """
-        st.components.v1.html(js, height=0)
-        st.success("Copied to clipboard!")
-        # Clear comparison view
         st.session_state.comparing = False
-        st.session_state.status_key += 1
         st.rerun()
 
 def search_interface():
@@ -94,10 +66,6 @@ def search_interface():
         show_comparison_view(st.session_state.selected_prompts)
         return
         
-    # Clear any existing status messages when starting a new search
-    st.session_state.status_key += 1
-    status_container = st.empty()
-    
     query = st.text_area("What are you trying to accomplish? I will then search for good prompts to give you a good start.")
     
     if query:
@@ -124,43 +92,12 @@ def search_interface():
                     col1, col2 = st.columns(2)
                     with col1:
                         if len(selected) == 1:
-                            if st.button("Use: copy to clipboard"):
-                                # Try pyperclip first
-                                try:
-                                    pyperclip.copy(selected[0].metadata['content'])
-                                except:
-                                    pass  # Fallback to JavaScript if pyperclip fails
-                                
-                                # Escape special characters and prepare content for JS
-                                content = selected[0].metadata['content'].replace('\\', '\\\\').replace("'", "\\'").replace('\n', '\\n')
-                                js = f"""
-                                <script>
-                                    try {{
-                                        navigator.clipboard.writeText('{content}').then(function() {{
-                                            window.parent.document.querySelector('[data-testid="stMarkdownContainer"]').innerHTML = '<p class="success" id="status-{st.session_state.status_key}">✅ Copied to clipboard!</p>';
-                                        }}).catch(function(err) {{
-                                            console.error('Failed to copy text: ', err);
-                                            window.parent.document.querySelector('[data-testid="stMarkdownContainer"]').innerHTML = '<p class="error" id="status-{st.session_state.status_key}">❌ Failed to copy to clipboard</p>';
-                                        }});
-                                    }} catch(err) {{
-                                        console.error('Error: ', err);
-                                    }}
-                                </script>
-                                <style>
-                                    .success {{ color: #00cc00; }}
-                                    .error {{ color: #ff0000; }}
-                                </style>
-                                """
-                                st.components.v1.html(js, height=0)
-                                with status_container:
-                                    st.success("Copied to clipboard!")
+                            st.code(selected[0].metadata["content"], language="markdown", wrap_lines=True)
                     
                     with col2:
                         if len(selected) > 1 and st.button("Compare"):
                             st.session_state.comparing = True
-                            st.session_state.status_key += 1
                             st.rerun()
-                            
         except Exception as e:
             logger.error(f"Error in search_interface: {e}", exc_info=True)
             st.error(f"Error searching database: {e}")
