@@ -5,6 +5,9 @@ description = "Default template for PDM package"
 authors = [
     {name = "Hopsakee", email = "jdejong@posteo.nl"},
 ]
+packages = [
+    {include = "src"},
+]
 dependencies = [
     "ipykernel>=6.29.5",
     "markdown>=3.7",
@@ -23,3 +26,7 @@ license = {text = "MIT"}
 
 [tool.pdm]
 distribution = false
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
