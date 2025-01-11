@@ -233,6 +233,25 @@ def main():
     
     # Add the trigger table at the end
     display_trigger_table()
+    
+    # Add credits at the bottom left
+    st.markdown("""
+    <style>
+    .credits {
+        position: fixed;
+        left: 1rem;
+        bottom: 1rem;
+        font-size: 0.8rem;
+        color: #666;
+        max-width: 600px;
+    }
+    </style>
+    <div class="credits">
+    This tool searches the great list of prompts available at <a href="https://github.com/danielmiessler/fabric">https://github.com/danielmiessler/fabric</a>. 
+    A great commandline utilty build by Daniel Miessler to make the use of LLM more frictionless.<br>
+    All credits to him and his fellow fabric builders.
+    </div>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

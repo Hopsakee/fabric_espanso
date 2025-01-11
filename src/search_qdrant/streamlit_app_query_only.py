@@ -117,6 +117,26 @@ def main():
     try:
         init_session_state()
         search_interface()
+        
+        # Add credits at the bottom left
+        st.markdown("""
+        <style>
+        .credits {
+            position: fixed;
+            left: 1rem;
+            bottom: 1rem;
+            font-size: 0.8rem;
+            color: #666;
+            max-width: 600px;
+        }
+        </style>
+        <div class="credits">
+        This tool searches the great list of prompts available at <a href="https://github.com/danielmiessler/fabric">https://github.com/danielmiessler/fabric</a>. 
+        A great commandline utilty build by Daniel Miessler to make the use of LLM more frictionless.<br>
+        All credits to him and his fellow fabric builders.
+        </div>
+        """, unsafe_allow_html=True)
+        
     except Exception as e:
         logger.error(f"Error in main: {str(e)}")
         st.error(f"An error occurred: {str(e)}")
