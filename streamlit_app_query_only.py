@@ -23,6 +23,8 @@ def init_session_state():
         st.session_state.comparing = False
     if 'comparison_selected' not in st.session_state:
         st.session_state.comparison_selected = None
+    if 'status_key' not in st.session_state:
+        st.session_state.status_key = 0
 
 def show_comparison_view(prompts):
     """Show a full-width comparison view of the selected prompts."""
@@ -53,11 +55,37 @@ def show_comparison_view(prompts):
     
     # Handle selection
     if selected_idx is not None:
-        st.button("Copy to clipboard", on_click=lambda: st.write(f'<script>navigator.clipboard.writeText("{prompts[selected_idx].metadata["content"]}");</script>', unsafe_allow_html=True))
-        # pyperclip.copy(prompts[selected_idx].metadata['content'])
-        st.success(f"Copied {prompts[selected_idx].metadata['filename']} to clipboard!")
+        # Try pyperclip first
+        try:
+            pyperclip.copy(prompts[selected_idx].metadata['content'])
+        except:
+            pass  # Fallback to JavaScript if pyperclip fails
+        
+        # Escape special characters and prepare content for JS
+        content = prompts[selected_idx].metadata['content'].replace('\\', '\\\\').replace("'", "\\'").replace('\n', '\\n')
+        js = f"""
+        <script>
+            try {{
+                navigator.clipboard.writeText('{content}').then(function() {{
+                    window.parent.document.querySelector('[data-testid="stMarkdownContainer"]').innerHTML = '<p class="success" id="status-{st.session_state.status_key}">✅ Copied to clipboard!</p>';
+                }}).catch(function(err) {{
+                    console.error('Failed to copy text: ', err);
+                    window.parent.document.querySelector('[data-testid="stMarkdownContainer"]').innerHTML = '<p class="error" id="status-{st.session_state.status_key}">❌ Failed to copy to clipboard</p>';
+                }});
+            }} catch(err) {{
+                console.error('Error: ', err);
+            }}
+        </script>
+        <style>
+            .success {{ color: #00cc00; }}
+            .error {{ color: #ff0000; }}
+        </style>
+        """
+        st.components.v1.html(js, height=0)
+        st.success("Copied to clipboard!")
         # Clear comparison view
         st.session_state.comparing = False
+        st.session_state.status_key += 1
         st.rerun()
 
 def search_interface():
@@ -66,6 +94,10 @@ def search_interface():
         show_comparison_view(st.session_state.selected_prompts)
         return
         
+    # Clear any existing status messages when starting a new search
+    st.session_state.status_key += 1
+    status_container = st.empty()
+    
     query = st.text_area("What are you trying to accomplish? I will then search for good prompts to give you a good start.")
     
     if query:
@@ -92,13 +124,41 @@ def search_interface():
                     col1, col2 = st.columns(2)
                     with col1:
                         if len(selected) == 1:
-                            # pyperclip.copy(selected[0].metadata['content'])
-                            st.button("Use: copy to clipboard", on_click=lambda: st.write(f'<script>navigator.clipboard.writeText("{selected[0].metadata["content"]}")</script>', unsafe_allow_html=True))
-                            st.success("Copied to clipboard!")
+                            if st.button("Use: copy to clipboard"):
+                                # Try pyperclip first
+                                try:
+                                    pyperclip.copy(selected[0].metadata['content'])
+                                except:
+                                    pass  # Fallback to JavaScript if pyperclip fails
+                                
+                                # Escape special characters and prepare content for JS
+                                content = selected[0].metadata['content'].replace('\\', '\\\\').replace("'", "\\'").replace('\n', '\\n')
+                                js = f"""
+                                <script>
+                                    try {{
+                                        navigator.clipboard.writeText('{content}').then(function() {{
+                                            window.parent.document.querySelector('[data-testid="stMarkdownContainer"]').innerHTML = '<p class="success" id="status-{st.session_state.status_key}">✅ Copied to clipboard!</p>';
+                                        }}).catch(function(err) {{
+                                            console.error('Failed to copy text: ', err);
+                                            window.parent.document.querySelector('[data-testid="stMarkdownContainer"]').innerHTML = '<p class="error" id="status-{st.session_state.status_key}">❌ Failed to copy to clipboard</p>';
+                                        }});
+                                    }} catch(err) {{
+                                        console.error('Error: ', err);
+                                    }}
+                                </script>
+                                <style>
+                                    .success {{ color: #00cc00; }}
+                                    .error {{ color: #ff0000; }}
+                                </style>
+                                """
+                                st.components.v1.html(js, height=0)
+                                with status_container:
+                                    st.success("Copied to clipboard!")
                     
                     with col2:
                         if len(selected) > 1 and st.button("Compare"):
                             st.session_state.comparing = True
+                            st.session_state.status_key += 1
                             st.rerun()
                             
         except Exception as e:
